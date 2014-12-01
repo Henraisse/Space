@@ -1,6 +1,8 @@
 
 
 import java.awt.*;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +15,8 @@ import javax.swing.JPanel;
 
 
 public class GPanel extends JPanel{
+	double zoom = 1;
+	
 	int counter = 0;
 	private ImageIcon image;
 	ArrayList<Star> stars;
@@ -20,6 +24,7 @@ public class GPanel extends JPanel{
 	public GPanel(ArrayList<Star> stars){
 		this.stars = stars;
 		image = new ImageIcon("C:\\Users\\Henraisse\\Desktop\\Space\\space.png");
+
 	}
 
 	@Override
@@ -30,13 +35,28 @@ public class GPanel extends JPanel{
 		
 		
 		for(Star s: stars){
-			g.setColor(s.getTempColor());
-			g.fillOval(s.x, s.y, s.radius, s.radius);
+			
+			s.drawStar(g, zoom);
+
 		}
 	}
 	
 	public void update(){
+		
 		setVisible(false);
 		setVisible(true);
 	}
+	
+	
+
+	
+//	@Override
+//	public void mouseWheelMoved(MouseWheelEvent e) {
+//		mouseScrolls++;
+//		if(e.getWheelRotation() > 0){zoom *= 1.2;}
+//		else if(e.getWheelRotation() <= 0){zoom *= 0.7;}
+//		
+//		
+//	}
+	
 }
