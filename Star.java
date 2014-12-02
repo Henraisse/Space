@@ -59,13 +59,25 @@ public class Star {
 		return ret2;
 	}
 	
-	public void drawStar(Graphics g, double zoom){
-		double factorX = x*zoom;
-		double factorY = y*zoom;		
-		if(factorX < 0 || factorX > 2000 || factorY < 0 || factorY > 1200){
+	public void drawStar(Graphics g, double zoom, int zx, int zy){
+		int posX = zx+x;
+		int posY = zy+y;
+		
+		double factorX = posX*zoom;
+		double factorY = posY*zoom;		
+		if(factorX < -60 || factorX > 2000 || factorY < -60 || factorY > 1200){
 			return;
 		}
-
+		
+		//HIGHLIGHT STAR #1000
+		if(id == 1000){
+			int ovalRad = (int)(30+(zoom*10));
+			g.setColor(Color.green);
+			int x0 = (int)(((posX)-((radius)/2))*zoom);
+			int y0 = (int)(((posY)-((radius)/2))*zoom);
+			g.drawOval((int)((x0-(ovalRad/2))+(radius/2)*zoom), (int)((y0-(ovalRad/2))+(radius/2)*zoom), ovalRad, ovalRad);
+		}
+		
 		int z = new Random().nextInt(500)+2;
 		double sizefactor = radius*zoom;
 		// STANDARD STRENGTH
@@ -73,49 +85,49 @@ public class Star {
 		int t4 = (int)(radius/2);		//tertiary orb size
 
 		if((sizefactor) >= 2){
-			drawOrbTertiary(g, t4, zoom);
+			drawOrbTertiary(g, t4, zoom, posX, posY);
 			if((sizefactor) >= 3){
-				drawOrbSecondary(g, t3, zoom);
+				drawOrbSecondary(g, t3, zoom, posX, posY);
 				if((sizefactor) >= 6){	
-					drawOrbPrimary(g, zoom);
+					drawOrbPrimary(g, zoom, posX, posY);
 				}
 			}
 		}
 		else if(sizefactor >= 0.3){
-			drawStarDot(g, zoom, sizefactor);
+			drawStarDot(g, zoom, sizefactor, posX, posY);
 		}
 
 	}
 
-	public void drawStarDot(Graphics g, double zoom, double size){
+	public void drawStarDot(Graphics g, double zoom, double size, int x, int y){
 		
-		int posX = (int)((x-((radius)/2))*zoom);
-		int posY = (int)((y-((radius)/2))*zoom);
+		int posX = (int)(((x)-((radius)/2))*zoom);
+		int posY = (int)(((y)-((radius)/2))*zoom);
 		g.setColor(getTempColor(size));
 		g.drawLine(posX , posY, posX , posY);
 	}
 	
-	public void drawOrbPrimary(Graphics g, double zoom){
-		int posX = (int)((x-((radius)/2))*zoom);
-		int posY = (int)((y-((radius)/2))*zoom);
+	public void drawOrbPrimary(Graphics g, double zoom, int x, int y){
+		int posX = (int)(((x)-((radius)/2))*zoom);
+		int posY = (int)(((y)-((radius)/2))*zoom);
 		int sizeX = (int)(radius*zoom);
 		int sizeY = (int)(radius*zoom);
 		g.setColor(Color.white);
 		g.fillOval(posX , posY, sizeX, sizeY);
 	}
 	
-	public void drawOrbSecondary(Graphics g, int z, double zoom){
-		int posX = (int)((x-((radius+z)/2))*zoom);
-		int posY = (int)((y-((radius+z)/2))*zoom);
+	public void drawOrbSecondary(Graphics g, int z, double zoom, int x, int y){
+		int posX = (int)(((x)-((radius+z)/2))*zoom);
+		int posY = (int)(((y)-((radius+z)/2))*zoom);
 		int sizeX = (int)((radius+z)*zoom);
 		int sizeY = (int)((radius+z)*zoom);
 		g.setColor(getTempColor(0.7));
 		g.fillOval(posX , posY, sizeX, sizeY);
 	}
 	
-	public void drawOrbTertiary(Graphics g, int z, double zoom){
-		int posX = (int)((x-((radius+z)/2))*zoom);
-		int posY = (int)((y-((radius+z)/2))*zoom);
+	public void drawOrbTertiary(Graphics g, int z, double zoom, int x, int y){
+		int posX = (int)(((x)-((radius+z)/2))*zoom);
+		int posY = (int)(((y)-((radius+z)/2))*zoom);
 		int sizeX = (int)((radius+z)*zoom);
 		int sizeY = (int)((radius+z)*zoom);
 		g.setColor(getTempColor(0.5));

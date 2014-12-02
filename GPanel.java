@@ -15,7 +15,9 @@ import javax.swing.JPanel;
 
 
 public class GPanel extends JPanel{
-	double zoom = 1;
+	double zoom = 0.1;
+	double zoom_x = 0;
+	double zoom_y = 0;
 	
 	int counter = 0;
 	private ImageIcon image;
@@ -33,10 +35,12 @@ public class GPanel extends JPanel{
 		//g.drawImage(image.getImage(), 0, 0, null); // see javadoc for more info on the parameters   
 		g.drawImage(image.getImage(),0,0,1900,1000, null);
 		
-		
+		g.setColor(Color.red);
+		g.drawOval((int)(zoom_x-5), (int)(zoom_y-5), 10, 10);
+
 		for(Star s: stars){
 			
-			s.drawStar(g, zoom);
+			s.drawStar(g, zoom, (int)zoom_x, (int)zoom_y);
 
 		}
 	}
@@ -47,7 +51,13 @@ public class GPanel extends JPanel{
 		setVisible(true);
 	}
 	
+	public int getGlobalX(int x){
+		return (int)(((x-8)/zoom)+zoom_x);
+	}
 	
+	public int getGlobalY(int y){
+		return (int)(((y-30)/zoom)+zoom_y);
+	}
 
 	
 //	@Override
