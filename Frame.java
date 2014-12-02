@@ -11,22 +11,24 @@ import javax.swing.JFrame;
 
 public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	
-	double motion = 0;
+	private static final double ZOOM_BOUNDARY = 0.01;
+
+	double momentum = 0;
 	
 	boolean mouseIsDown = false;
-	int mouseDownX = 0;
-	int mouseDownY = 0;
+	double mouseDownX = 0;
+	double mouseDownY = 0;
 	
-	int mouseScrollX = 0;
-	int mouseScrollY = 0;
-	//double motion_x = 0;
-	//double motion_y = 0;
+	double mouseScrollX = 0;
+	double mouseScrollY = 0;
 	
 	GPanel panel;
 	
+	public static int ZOOM_SPEED = 30;
+	
 	public Frame(){
 		ArrayList<Star> stars = new ArrayList<Star>();
-		for(int i = 0; i < 2000; i++){
+		for(int i = 0; i < 10000; i++){
 			stars.add(new Star(i, ""));
 		}
 		
@@ -40,17 +42,19 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		
+		
 		while(panel.counter < 1000000){	
 			update();			
 		}
 	}
 	
-	
+
 	
 	public void update(){
 	    updateZoomScale();
 	    updateMouseDrag();
 		
+
 		panel.counter++;	
 		enforceBoundaries();
 		panel.update();	
@@ -60,30 +64,28 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 		sleep(20);
 	}
 
-
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		
-			//zooming out
-			if(e.getWheelRotation() < 0){
-				motion -= panel.zoom/10;	
-			}
 			//zooming in
-			else{
-				motion += panel.zoom/10;
-				
+			if(e.getWheelRotation() < 0){
+//					motion += panel.zoom/10;
+				momentum += panel.zoom_scale/10;
 			}
-			System.out.println("motion: " + motion);
-			
+			//zooming out
+			else{
+				momentum -= panel.zoom_scale/10;
+				//motion -= 10;
+			}
 			mouseScrollX = getMouseX();
 			mouseScrollY = getMouseY();									
 	    }
 
 	public void updateMouseDrag(){
 	    if(mouseIsDown){
-	    	int x = getMouseX();
-			int y = getMouseY();
-			int mouseDiffX = (int)((x - mouseDownX)/panel.zoom);
-			int mouseDiffY = (int)((y - mouseDownY)/panel.zoom);
+	    	double x = getMouseX();
+			double y = getMouseY();
+			double mouseDiffX = ((x - mouseDownX)/panel.zoom_scale);
+			double mouseDiffY = ((y - mouseDownY)/panel.zoom_scale);
 			mouseDownX = x;
 			mouseDownY = y;
 							
@@ -103,28 +105,25 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	}
 	
 	public void updateZoomScale(){		    
-		
-		if((motion > 0.01 || motion < -0.01)){
-			double zoomement = motion/20;
 
-			//if((panel.zoom < 10 && motion > 0) || (panel.zoom > 0.1 && motion < 0)){
-					panel.zoom += zoomement;				
-				
-				//if(motion > 0.01 || motion < -0.01){
-					panel.zoom_x -= (zoomement*mouseScrollX)/(panel.zoom*panel.zoom);
-					panel.zoom_y -= (zoomement*mouseScrollY)/(panel.zoom*panel.zoom);
-				//}
+		if ((momentum > ZOOM_BOUNDARY || momentum < -ZOOM_BOUNDARY)) {
+			
+			double zoom_step = momentum / ZOOM_SPEED;
 
+			panel.zoom_scale += zoom_step;				
 
-			//}
-	    			    	
-			motion -= zoomement;
+			
+			
+			panel.zoom_x -= (zoom_step*mouseScrollX)/(panel.zoom_scale*panel.zoom_scale);
+			panel.zoom_y -= (zoom_step*mouseScrollY)/(panel.zoom_scale*panel.zoom_scale);
+
+			momentum -= zoom_step;
 		}
 		else{
-			motion = 0;
+			momentum = 0;
 		}	
-		if(panel.zoom > 10){panel.zoom = 10;}
-		if(panel.zoom < 0.1){panel.zoom = 0.1;}
+		if(panel.zoom_scale > 10){panel.zoom_scale = 10;}
+		if(panel.zoom_scale < 0.1){panel.zoom_scale = 0.1;}
 	}
 
 	@Override
@@ -151,12 +150,12 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	}
 
 	public void mousePressed(MouseEvent arg0) {
-		motion = 0;
+		momentum = 0;
 		
 		mouseIsDown = true;
 		mouseDownX = arg0.getX()-8;
 		mouseDownY = arg0.getY()-30;
-		System.out.println("mouse down at: " + mouseDownX + ", " + mouseDownY);
+		//System.out.println("mouse down at: " + mouseDownX + ", " + mouseDownY);
 		
 	}
 
