@@ -25,8 +25,8 @@ public class Star {
 		id = i;
 		name = n;
 		Random rand = new Random();
-		x = rand.nextInt(1900);
-		y = rand.nextInt(1000);
+		x = rand.nextInt(20000);
+		y = rand.nextInt(10000);
 		kelvin = rand.nextInt(6)+1;
 		generateSize(rand);
 		
@@ -60,27 +60,39 @@ public class Star {
 	}
 	
 	public void drawStar(Graphics g, double zoom){
-		
-		int z = new Random().nextInt(500)+2;
+		double factorX = x*zoom;
+		double factorY = y*zoom;		
+		if(factorX < 0 || factorX > 2000 || factorY < 0 || factorY > 1200){
+			return;
+		}
 
-		int t1 = 0;
-		int t2 = 0;
-		int t3 = 0;
-		int t4 = 0;
-		if(z > 500){
-			// FLICKER STRENGTH
-			t3 = (radius/3)+2;		//secondary orb size
-			t4 = (int)(radius/2)+2;		//tertiary orb size
-			
+		int z = new Random().nextInt(500)+2;
+		double sizefactor = radius*zoom;
+		// STANDARD STRENGTH
+		int t3 = (int)(radius/3);		//secondary orb size
+		int t4 = (int)(radius/2);		//tertiary orb size
+
+		if((sizefactor) >= 2){
+			drawOrbTertiary(g, t4, zoom);
+			if((sizefactor) >= 3){
+				drawOrbSecondary(g, t3, zoom);
+				if((sizefactor) >= 6){	
+					drawOrbPrimary(g, zoom);
+				}
 			}
-		else{
-			// STANDARD STRENGTH
-			t3 = (radius/3);		//secondary orb size
-			t4 = (int)(radius/2);		//tertiary orb size
-			}		
-		drawOrbTertiary(g, t4, zoom);
-		drawOrbSecondary(g, t3, zoom);
-		drawOrbPrimary(g, zoom);								
+		}
+		else if(sizefactor >= 0.3){
+			drawStarDot(g, zoom, sizefactor);
+		}
+
+	}
+
+	public void drawStarDot(Graphics g, double zoom, double size){
+		
+		int posX = (int)((x-((radius)/2))*zoom);
+		int posY = (int)((y-((radius)/2))*zoom);
+		g.setColor(getTempColor(size));
+		g.drawLine(posX , posY, posX , posY);
 	}
 	
 	public void drawOrbPrimary(Graphics g, double zoom){
