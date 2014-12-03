@@ -27,16 +27,14 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	public static int ZOOM_SPEED = 30;
 	
 	public Frame(){
-		ArrayList<Star> stars = new ArrayList<Star>();
-		for(int i = 0; i < 10000; i++){
-			stars.add(new Star(i, ""));
-		}
+		
+		Galaxy gax = new Galaxy();
 		
 		setSize(1900, 1000);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
-		panel = new GPanel(stars);
+		panel = new GPanel(gax);
 		add(panel);
 		panel.setBackground(Color.BLACK);
 		addMouseWheelListener(this);

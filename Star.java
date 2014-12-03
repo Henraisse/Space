@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.util.Random;
 
 
@@ -8,7 +10,7 @@ public class Star {
 	String name;
 	double x, y;
 	double radius;
-	
+	Galaxy galax;
 	int kelvin;
 	
 	Color O = new Color(155, 176, 255);
@@ -21,12 +23,12 @@ public class Star {
 
 
 	
-	public Star(int i, String n){
+	public Star(int i, String n, Galaxy gax){
+		galax = gax;
 		id = i;
 		name = n;
 		Random rand = new Random();
-		x = rand.nextInt(20000);
-		y = rand.nextInt(10000);
+		generatePosition(10000,5000, rand);
 		kelvin = rand.nextInt(6)+1;
 		generateSize(rand);
 		
@@ -134,8 +136,53 @@ public class Star {
 		
 		
 	}
+	
+	public void generatePosition(int galaxyCenter_x, int galaxyCenter_y, Random rand){
 		
+		
+		double length = rand.nextDouble();
+		if(length > 0.7){
+			length = rand.nextDouble();
+		}
+		
+		//calculate rotation around galaxy axis
+		int arm = rand.nextInt(galax.NUMBER_OF_GALAXY_ARMS+2);	
+		double cakePart = 360/(galax.NUMBER_OF_GALAXY_ARMS);	
+		//double rot = 360*rand.nextDouble();
+		double[] pt = {galax.x+galax.RADIUS, galax.y};		
+		
+		double rotation = (arm*cakePart)+length*cakePart*galax.GALAXY_ARM_ROTATION;
+		AffineTransform.getRotateInstance(Math.toRadians(rotation), galax.x, galax.y).transform(pt, 0, pt, 0, 1); // specifying to use this double[] to hold coords
+		//double x0 = pt[0];
+		//double y0 = pt[1];
+		
+		
+		//double x_radialStep = (pt[0] - galax.x);
+		//double y_radialStep = (pt[1] - galax.y);
+
+		
+		double armpos_x = (length*(pt[0] - galax.x)) + galax.x;
+		double armpos_y = (length*(pt[1] - galax.y)) + galax.y;
+
+		double random_x = rand.nextDouble()*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		double random_y = rand.nextDouble()*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		
+		x = armpos_x + random_x;
+		y = armpos_y + random_y;
+		//generera en godtycklig radian
+		//x = rand.nextInt(20000);
+		//y = rand.nextInt(10000);
+		
+	}
 }
+
+
+
+
+
+
+
+
 
 
 

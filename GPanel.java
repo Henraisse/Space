@@ -22,10 +22,12 @@ public class GPanel extends JPanel{
 	int counter = 0;
 	private ImageIcon image;
 	ArrayList<Star> stars;
+	Galaxy galax;
 	
-	public GPanel(ArrayList<Star> stars){
-		this.stars = stars;
-		image = new ImageIcon("C:\\Users\\Henraisse\\Desktop\\Space\\space.png");
+	public GPanel(Galaxy gax){
+		galax = gax;
+		this.stars = gax.stars;
+		image = new ImageIcon("space.png");
 
 	}
 
