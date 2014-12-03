@@ -159,7 +159,7 @@ public class Star {
 		
 		//double x_radialStep = (pt[0] - galax.x);
 		//double y_radialStep = (pt[1] - galax.y);
-
+		//hej
 		
 		double armpos_x = (length*(pt[0] - galax.x)) + galax.x;
 		double armpos_y = (length*(pt[1] - galax.y)) + galax.y;
