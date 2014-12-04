@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class Galaxy {
 	public static final double GALAXY_ARM_ROTATION = 6;
-	public static final double STAR_ARM_BONUS_OFFSET = 300;
-	public static final double STAR_ARM_MAX_OFFSET   = 350;
-	public static int NUMBER_OF_STARS = 10000;
+	public static final double STAR_ARM_BONUS_OFFSET = 650;
+	public static final double STAR_ARM_MAX_OFFSET   = 100;
+	public static int NUMBER_OF_STARS = 100000;
 	public static int NUMBER_OF_GALAXY_ARMS = 6;
 	
 	public static int RADIUS = 4000;

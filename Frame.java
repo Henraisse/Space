@@ -8,11 +8,18 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-
+/**
+ * Frame class is used mainly for user I/O, like zoom, scroll, and general processes concerning the GUI.
+ * Also contains a call to Star and Galaxy updates.
+ * @author Henraisse
+ *
+ */
 public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	
-	private static final double ZOOM_BOUNDARY = 0.01;
-
+	private static final double ZOOM_SPEED_BOUNDARY = 0.01;
+	private static final double ZOOM_SCALE_MAX = 100;
+	private static final double ZOOM_SCALE_MIN = 0.1;
+	Galaxy gax;
 	double momentum = 0;
 	
 	boolean mouseIsDown = false;
@@ -26,32 +33,30 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	
 	public static int ZOOM_SPEED = 30;
 	
-	public Frame(){
-		
-		Galaxy gax = new Galaxy();
-		
+	public Frame(){		
+		gax = new Galaxy();	
+		setUpWindow();
+		while(panel.counter < 1000000){	
+			update();			
+		}
+	}
+	
+	public void setUpWindow(){
 		setSize(1900, 1000);
 		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);				
 		panel = new GPanel(gax);
 		add(panel);
 		panel.setBackground(Color.BLACK);
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		
-		
-		while(panel.counter < 1000000){	
-			update();			
-		}
 	}
 	
-
-	
 	public void update(){
-	    updateZoomScale();
-	    updateMouseDrag();
-		
+
+		updateZoomScale();
+	    updateMouseDrag();		
 
 		panel.counter++;	
 		enforceBoundaries();
@@ -104,60 +109,41 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 	
 	public void updateZoomScale(){		    
 
-		if ((momentum > ZOOM_BOUNDARY || momentum < -ZOOM_BOUNDARY)) {
+		if ((momentum > ZOOM_SPEED_BOUNDARY || momentum < -ZOOM_SPEED_BOUNDARY)) {
 			
+			//take a piece from momentum
 			double zoom_step = momentum / ZOOM_SPEED;
-
-			panel.zoom_scale += zoom_step;				
-
-			
-			
-			panel.zoom_x -= (zoom_step*mouseScrollX)/(panel.zoom_scale*panel.zoom_scale);
-			panel.zoom_y -= (zoom_step*mouseScrollY)/(panel.zoom_scale*panel.zoom_scale);
-
 			momentum -= zoom_step;
+			
+			//calculate steps
+			panel.zoom_scale += zoom_step;										
+			panel.zoom_x -= (zoom_step*mouseScrollX)/(panel.zoom_scale*panel.zoom_scale);
+			panel.zoom_y -= (zoom_step*mouseScrollY)/(panel.zoom_scale*panel.zoom_scale);			
 		}
 		else{
 			momentum = 0;
 		}	
-		if(panel.zoom_scale > 10){panel.zoom_scale = 10;}
-		if(panel.zoom_scale < 0.1){panel.zoom_scale = 0.1;}
+		//make sure we do not zoom in or out too much
+		if(panel.zoom_scale > ZOOM_SCALE_MAX){panel.zoom_scale = ZOOM_SCALE_MAX;}
+		if(panel.zoom_scale < ZOOM_SCALE_MIN){panel.zoom_scale = ZOOM_SCALE_MIN;}
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-						
+	public void mouseClicked(MouseEvent arg0) {						
 		// centrera bilden där man klickat
 		int x = panel.getGlobalX(arg0.getX());
-		int y = panel.getGlobalY(arg0.getY());
-		
-		//System.out.println("mouse clicked at: " + x + ", " + y);
-		
+		int y = panel.getGlobalY(arg0.getY());		
 	}
 
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public void mousePressed(MouseEvent arg0) {
 		momentum = 0;
 		
 		mouseIsDown = true;
-		mouseDownX = arg0.getX()-8;
-		mouseDownY = arg0.getY()-30;
-		//System.out.println("mouse down at: " + mouseDownX + ", " + mouseDownY);
-		
+		mouseDownX = arg0.getX()-8;	//8 and 30 are to eliminate frame border from coordinates
+		mouseDownY = arg0.getY()-30;		
 	}
 
-	@Override
+
 	public void mouseReleased(MouseEvent arg0) {
 		mouseIsDown = false;
 	}
@@ -177,5 +163,8 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener{
 		    Thread.currentThread().interrupt();
 		}
 	}
+	
+	public void mouseEntered(MouseEvent arg0) {}
+	public void mouseExited(MouseEvent arg0) {}
 	
 }

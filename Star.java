@@ -12,6 +12,7 @@ public class Star {
 	double radius;
 	Galaxy galax;
 	int kelvin;
+
 	
 	Color O = new Color(155, 176, 255);
 	Color B = new Color(170, 191, 255);
@@ -89,18 +90,18 @@ public class Star {
 		int t3 = (int)(radius/3);		//secondary orb size
 		int t4 = (int)(radius/2);		//tertiary orb size
 
-		if((sizefactor) >= 2){
-			drawStarOrb(g, 0.5, zoom, posX, posY, t4);
-			if((sizefactor) >= 3){
-				drawStarOrb(g, 0.7, zoom, posX, posY, t3);
-				if((sizefactor) >= 6){	
-					drawStarOrb(g, 10, zoom, posX, posY, 1);
-				}
-			}
-		}
-		else if(sizefactor >= 0.3){
+//		if((sizefactor) >= 2){
+//			drawStarOrb(g, 0.5, zoom, posX, posY, t4);
+//			if((sizefactor) >= 3){
+//				drawStarOrb(g, 0.7, zoom, posX, posY, t3);
+//				if((sizefactor) >= 6){	
+//					drawStarOrb(g, 10, zoom, posX, posY, 1);
+//				}
+//			}
+//		}
+//		else if(sizefactor >= 0.3){
 			drawStarDot(g, zoom, sizefactor, posX, posY);
-		}
+//		}
 
 	}
 
@@ -137,8 +138,8 @@ public class Star {
 		
 	}
 	
-	public void generatePosition(int galaxyCenter_x, int galaxyCenter_y, Random rand){
-		
+	public void generatePositionOne(int galaxyCenter_x, int galaxyCenter_y, Random rand){			
+		int plusminus = (int) Math.pow(-1, rand.nextInt(20));
 		
 		double length = rand.nextDouble();
 		if(length > 0.7){
@@ -153,26 +154,65 @@ public class Star {
 		
 		double rotation = (arm*cakePart)+length*cakePart*galax.GALAXY_ARM_ROTATION;
 		AffineTransform.getRotateInstance(Math.toRadians(rotation), galax.x, galax.y).transform(pt, 0, pt, 0, 1); // specifying to use this double[] to hold coords
-		//double x0 = pt[0];
-		//double y0 = pt[1];
-		
-		
-		//double x_radialStep = (pt[0] - galax.x);
-		//double y_radialStep = (pt[1] - galax.y);
-		//hej
+
 		
 		double armpos_x = (length*(pt[0] - galax.x)) + galax.x;
 		double armpos_y = (length*(pt[1] - galax.y)) + galax.y;
 
-		double random_x = rand.nextDouble()*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
-		double random_y = rand.nextDouble()*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+//		double random_x = (plusminus*rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+//		double random_y = (plusminus*rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		
+		double random_x = (0.5-rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		double random_y = (0.5-rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
 		
 		x = armpos_x + random_x;
-		y = armpos_y + random_y;
-		//generera en godtycklig radian
-		//x = rand.nextInt(20000);
-		//y = rand.nextInt(10000);
+		y = armpos_y + random_y;		
+	}
+	
+	public void generatePositionTwo(int galaxyCenter_x, int galaxyCenter_y, Random rand){			
+		int plusminus = (int) Math.pow(-1, rand.nextInt(20));
 		
+		double length = rand.nextDouble();
+		//if(length > 0.7){
+		//	length = rand.nextDouble();
+		//}
+		
+		//calculate rotation around galaxy axis
+		//int arm = rand.nextInt(galax.NUMBER_OF_GALAXY_ARMS+2);	
+		//double cakePart = 360/(galax.NUMBER_OF_GALAXY_ARMS);	
+		//double rot = 360*rand.nextDouble();
+		double[] pt = {galax.x+galax.RADIUS, galax.y};		
+		
+		double rotation = rand.nextDouble()*360;
+		AffineTransform.getRotateInstance(Math.toRadians(rotation), galax.x, galax.y).transform(pt, 0, pt, 0, 1); // specifying to use this double[] to hold coords
+
+		
+		double armpos_x = (length*(pt[0] - galax.x)) + galax.x;
+		double armpos_y = (length*(pt[1] - galax.y)) + galax.y;
+
+//		double random_x = (plusminus*rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+//		double random_y = (plusminus*rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		
+		//double random_x = (0.5-rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		//double random_y = (0.5-rand.nextDouble())*(galax.STAR_ARM_MAX_OFFSET + galax.STAR_ARM_BONUS_OFFSET*(1-length));
+		
+		x = armpos_x;// + random_x;
+		y = armpos_y;// + random_y;		
+	}
+	
+	
+	public void generatePosition(int galaxyCenter_x, int galaxyCenter_y, Random rand){
+		int category = rand.nextInt(3)+1;
+		
+		if(category == 1){
+			generatePositionOne(galaxyCenter_x, galaxyCenter_y, rand);
+		}
+		else if(category == 2){
+			generatePositionTwo(galaxyCenter_x, galaxyCenter_y, rand);
+		}
+		else if(category == 3){
+			generatePositionOne(galaxyCenter_x, galaxyCenter_y, rand);
+		}
 	}
 }
 

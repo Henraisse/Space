@@ -25,49 +25,56 @@ public class GPanel extends JPanel{
 	Galaxy galax;
 	
 	public GPanel(Galaxy gax){
-		galax = gax;
+		this.galax = gax;
 		this.stars = gax.stars;
+
 		image = new ImageIcon("space.png");
-
 	}
+	
 
-	@Override
+		
+	/**
+	 * Draws everything.
+	 */
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);
 		g.drawImage(image.getImage(),0,0,1900,1000, null);
-		
-		g.setColor(Color.red);
-		g.drawOval((int)(zoom_x-5), (int)(zoom_y-5), 10, 10);
 
-		for(Star s: stars){
-			
+		for(Star s: stars){			
 			s.drawStar(g, zoom_scale, zoom_x, zoom_y);
-
 		}
 	}
 	
-	public void update(){
-		
+	/**
+	 * Initiates the redraw of everything.
+	 */
+	public void update(){		
 		setVisible(false);
 		setVisible(true);
 	}
 	
+	/**
+	 * Returns the "Space"-coordinate x
+	 * @param x
+	 * @return
+	 */
 	public int getGlobalX(int x){
 		return (int)(((x-8)/zoom_scale)+zoom_x);
 	}
 	
+	/**
+	 * Returns the "Space"-coordinate y
+	 * @param y
+	 * @return
+	 */
 	public int getGlobalY(int y){
 		return (int)(((y-30)/zoom_scale)+zoom_y);
 	}
+	
+	
+	
 
 	
-//	@Override
-//	public void mouseWheelMoved(MouseWheelEvent e) {
-//		mouseScrolls++;
-//		if(e.getWheelRotation() > 0){zoom *= 1.2;}
-//		else if(e.getWheelRotation() <= 0){zoom *= 0.7;}
-//		
-//		
-//	}
+	
 	
 }
