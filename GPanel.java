@@ -13,9 +13,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 
-
+/**
+ * This class represents the GUI of this program.
+ * @author Henraisse
+ *
+ */
 public class GPanel extends JPanel{
-	double zoom_scale = 0.1;
+	double zoom_scale = Frame.ZOOM_SCALE_MIN;
 	double zoom_x = 0;
 	double zoom_y = 0;
 	
@@ -25,6 +29,7 @@ public class GPanel extends JPanel{
 	Galaxy galax;
 	
 	public GPanel(Galaxy gax){
+		setBackground(Color.BLACK);
 		this.galax = gax;
 		this.stars = gax.stars;
 
@@ -38,8 +43,11 @@ public class GPanel extends JPanel{
 	 */
 	protected void paintComponent(Graphics g){
 		super.paintComponent(g);
+		
+		//draws the background
 		g.drawImage(image.getImage(),0,0,1900,1000, null);
 
+		//Draws all the galaxy's stars
 		for(Star s: stars){			
 			s.drawStar(g, zoom_scale, zoom_x, zoom_y);
 		}
