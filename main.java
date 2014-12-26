@@ -6,6 +6,9 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import GUI.Frame;
+
 import java.awt.event.*;
 public class main {
 

@@ -1,13 +1,20 @@
+package Space;
+import java.awt.Color;
 import java.awt.geom.AffineTransform;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+
+import Static.Static;
 
 /**
  * This class represents a galaxy in space, containing stars.
  * @author Henraisse
  *
  */
-public class Galaxy {
+public class Galaxy implements Serializable{
+	public static final int SPACE_BOUNDS_X = 40000;
+	public static final int SPACE_BOUNDS_Y = 30000;
 	public static final double GALAXY_ARM_ROTATION = 6;
 	public static final double STAR_ARM_BONUS_OFFSET = 650;
 	public static final double STAR_ARM_MAX_OFFSET   = 300;
@@ -16,23 +23,47 @@ public class Galaxy {
 	public static int NUMBER_OF_GALAXY_ARMS = 6;	
 	public static int RADIUS = 0;	
 	
+	public Star selected_star = null;
 	public static double x = 0;
 	public static double y = 0;
-	ArrayList<Star> stars;
+	public ArrayList<Star> stars;
+	public int id;
 	
-	public Galaxy(int starCount, int galaxy_center_x, int galaxy_center_y, int galaxy_radius){
-		NUMBER_OF_STARS = starCount;
+	public ArrayList<Star>[][] sectors;
+	ArrayList<Star> selectedStars = new ArrayList<Star>();
+	public int sector_size = 100;
+	public Random randomGenerator;
+	public BlackHole center;
+	
+	@SuppressWarnings("unchecked")
+	public Galaxy(int starCount, int galaxy_center_x, int galaxy_center_y, int galaxy_radius, int id){
+		this.id = id;
+		NUMBER_OF_STARS = starCount;				
 		RADIUS = galaxy_radius;
 		x = galaxy_center_x;
 		y = galaxy_center_y;
 		
+		sectors = new ArrayList[SPACE_BOUNDS_X/200][SPACE_BOUNDS_Y/200];
+		for(int i = 0; i < sectors.length; i++){
+			for(int j = 0; j < sectors[i].length; j++){
+				sectors[i][j] = new ArrayList<Star>();
+			}
+		}
+		
 		stars = new ArrayList<Star>();
-		Random rand = new Random();
+		randomGenerator = new Random(id);
 		
 		for(int i = 0; i < NUMBER_OF_STARS; i++){
 			Star new_star = new Star(i, "", this);
-			generatePosition(rand, new_star);
-			stars.add(new_star);			
+			generatePosition(randomGenerator, new_star);
+			//placeInMatrix(new_star);
+			stars.add(new_star);		
+		}
+						
+		center = new BlackHole(starCount, galaxy_center_x, galaxy_center_y, this);
+		
+		for(Star s: stars){
+			Static.calculateNeighbors(s);
 		}
 	}
 
@@ -78,7 +109,9 @@ public class Galaxy {
 		
 		//give the star its new coordinates
 		star.x = armpos_x + random_x;
-		star.y = armpos_y + random_y;		
+		star.y = armpos_y + random_y;	
+		
+		placeInSector(star);
 	}
 	
 	/**
@@ -106,6 +139,8 @@ public class Galaxy {
 
 		star.x = armpos_x;
 		star.y = armpos_y;
+		
+		placeInSector(star);
 	}
 		
 	/**
@@ -145,4 +180,46 @@ public class Galaxy {
 
 	}
 	
+	
+	public int getStarId(double x, double y){
+		Star closest = stars.get(0);
+		double least = 9999999;
+		for(Star s: stars){
+			double distance = Math.sqrt(((x - s.x)*(x - s.x) + (y - s.y)*(y - s.y)));
+			if (distance < least){
+				least = distance;
+				closest = s;
+			}
+		}
+		selected_star = closest;
+		
+		for(Star s : selectedStars){
+			s.flagged = false;
+		}
+		selectedStars.clear();
+		
+		
+		selectedStars.add(selected_star);
+		for(Star s : selected_star.neighbors){
+			selectedStars.add(s);
+			s.flagged = true;
+		}
+		
+		return closest.star_id;
+
+	}
+	
+	public void placeInSector(Star s){
+		int x = (int)(s.x/sector_size);
+		int y = (int)(s.y/sector_size);
+		
+		sectors[x][y].add(s);						
+	}
+	
+	
+	
+	
 }
+
+
+
