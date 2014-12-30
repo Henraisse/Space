@@ -22,7 +22,7 @@ import Space.Star;
 public class Static {
 	
 	//PHYSICS
-	public static double slowDown = 1;
+	public static double slowDown = 200;
 	public static double mult=1.43/slowDown;
 	public static double TIMEFACTOR=31536000*mult;
 	public static double GRAVITY_CONSTANT = 0.0000000000673;
@@ -35,12 +35,13 @@ public class Static {
 	public static int EXPONENTIAL = 2;
 	public static final int POLYNOMIAL = 3;
 	
-	private static final double NEIGHBOR_DISTANCE = 0.1;	
+	private static final double NEIGHBOR_DISTANCE = 0.1;
+	public static final String STAR_SPECS_LABEL = "ssl";	
 	public static String DISTANCE_RULER_FONT = "BoomBox 2";
 	
 	public static Color STAR_NAME_COLOR = new Color(96,96,255);
 	
-	public static double DRAW_STAR_RADIUS_CENTER = 40;
+	public static double DRAW_STAR_RADIUS_CENTER = 15;
 	
 	public static int STAR_NAME_NUMBER_COUNT = 3;
 	public static Font ruler_font8 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 8);

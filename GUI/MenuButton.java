@@ -26,6 +26,7 @@ public class MenuButton {
 	String text;
 	
 	boolean clicked = false;
+	boolean isDown = false;
 	boolean f = false;
 	
 	public MenuButton(Menu m, int x0, int y0, int length, int height, String text, Font f1){
@@ -44,23 +45,56 @@ public class MenuButton {
 	public boolean clickedAt(double xi, double yi){
 
 		if((x < xi && xi < (x+length) )&&( y < yi && yi < (y+height))){
-			clicked = true;
-			action();
+			setDown();
+			//clicked = true;
+			//isDown = true;
+			//action();
 			//System.out.println(text);
-			menuImg = image2.getImage();
-			f = true;
+			//menuImg = image2.getImage();
+			//f = true;
 			return true;
 		}
 		else{
-			f = false;
-			menuImg = image1.getImage();
+			setUp();
 			return false;
 		}
 	}
 	
+	public boolean releasedAt(double xi, double yi){
+	
+		if((x < xi && xi < (x+length) )&&( y < yi && yi < (y+height))){
+			if(isDown == true){
+				clicked = true;
+				action();
+			}
+			setUp();
+			//action();
+			//System.out.println(text);
+			//menuImg = image2.getImage();
+			//f = true;
+			return true;
+		}
+		setUp();
+		return false;
+	}
+	
+	
+	public void setDown(){
+		isDown = true;
+		menuImg = image2.getImage();
+		
+	}
+	
+	public void setUp(){
+		
+		menuImg = image1.getImage();
+		isDown = false;		
+	}
+	
+	
 	public void paint(Graphics g){
 		g.setColor(Color.black);
-		if(f){
+		if(isDown){
 			g.setColor(Color.red);
 			//g.drawImage(menuImg,x0,y0,510,1080, null);
 		}

@@ -53,22 +53,23 @@ public class Planet {
 		DressPlanet();
 		planetPos=new Position(Static.starPos.x + distance, Static.starPos.y);
 		trajectory=new Position(0, Math.sqrt(Static.GRAVITY_CONSTANT *starmass/(planetPos.x-Static.starPos.x))*Math.sqrt(Static.TIMEFACTOR)); // direction vector
-		trajectory=trajectory.times(0.9+0.2*rand.nextDouble());
+		trajectory=trajectory.times(0.95+(0.1*rand.nextDouble()));
 		
 		double degrees = rand.nextInt(360);
 		planetPos.rotate(distance, degrees);
 		trajectory.rotate(radius, degrees, 0, 0);
-		printSpecs();
+		//printSpecs();
 	}
 
 	public void setSpecs(Star s, Random rand){
 		
 		age = (int) (s.age - ((s.age*9/10)*rand.nextDouble()));		
-		radius = rand.nextInt(10000);
+		radius = rand.nextInt(Physics.PLANET_MAX_KM_RADIUS);
 		
 		Physics.calculatePlanetDensity(this, s.magnitude, rand);	
 		Physics.calculatePlanetMass(this);
 		Physics.calculatePlanetMagneticField(this);
+		Physics.calculatePlanetAtmosphere(this);
 		Physics.calculatePlanetSurfaceTemperature(this);
 
 		
@@ -83,6 +84,7 @@ public class Planet {
 	
 	public void Paint(Graphics g)
 	{
+		g.setColor(color);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		double gasGiantBonus = 1;
 		if(gasGiant){gasGiantBonus = 3;}
@@ -92,6 +94,7 @@ public class Planet {
 		g.fillOval((int)(planetPos.x-projectedRadius), (int)(planetPos.y-projectedRadius), (int)(2*projectedRadius), (int)(2*projectedRadius));
 		g.drawImage(Static.planet02.getImage(), (int)(planetPos.x-projectedRadius), (int)(planetPos.y-projectedRadius), (int)(2*projectedRadius), (int)(2*projectedRadius), null);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		printPlanetStats(g);
 	}
 	
 	public void UpdateTrajectory()
@@ -111,6 +114,7 @@ public class Planet {
 	public void DressPlanet()
 	{
 		Static.calculatePlanetColor(this);
+		
 	}
 	
 	public void printSpecs(){
@@ -131,13 +135,24 @@ public class Planet {
 		}
 		else{
 			g.setColor(Color.red);
-		}
+		}		
+		//g.setColor(Physics.getPlanetColor((int)surfaceTemp-273));
+	}
+	
+	public void printPlanetStats(Graphics g){
+		int fontSize = 20;
+		g.setFont(new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 10));
 		
-		g.setFont(new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 8));
-		g.drawString("Life: " + life, (int)planetPos.x+10, (int)planetPos.y);
-		g.drawString("Temp: " + surfaceTemp + " Kelvin", (int)planetPos.x+10, (int)planetPos.y+10);
-		g.drawString("Atmosphere: " + atmosphere + " bar", (int)planetPos.x+10, (int)planetPos.y+20);
-		g.drawString("Id: " + planetId, (int)planetPos.x+10, (int)planetPos.y+30);
+		//g.drawString("Id: " + planetId, (int)planetPos.x+10, (int)planetPos.y+(0*fontSize));
+		g.drawString("Distance: " + distance + " M km", (int)planetPos.x+10, (int)planetPos.y+(0*fontSize));
+		//g.drawString("Mass: " + (double)((int)(mass*100)/100.0), (int)planetPos.x+10, (int)planetPos.y+(2*fontSize));
+		g.drawString("Temp: " + (double)((int)((surfaceTemp-273)*10)/10.0) + " C ", (int)planetPos.x+10, (int)planetPos.y+(1*fontSize));
+		//g.drawString("Atmosphere: " + atmosphere + " bar", (int)planetPos.x+10, (int)planetPos.y+(4*fontSize));
+		//g.drawString("Life: " + life, (int)planetPos.x+10, (int)planetPos.y+(5*fontSize));
+		
+		
+		
+		
 	}
 	
 }

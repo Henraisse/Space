@@ -1,5 +1,6 @@
 package Space;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import GUI.GPanel;
+import Static.Position;
 import Static.Static;
 import Static.Temperature;
 
@@ -20,7 +22,7 @@ public class Star implements Serializable{
 	
 	//GLOBAL VARIABLES
 	public int age = 10000;
-	public int magnitude = 10;
+	public int magnitude = 7;
 	
 	public int star_id;		//stjärnans id
 	public String nick;
@@ -139,11 +141,26 @@ public class Star implements Serializable{
 	
 	
 	public void drawStarCenter(Graphics g){		
-		drawStarDotCenter(g, Static.DRAW_STAR_RADIUS_CENTER);
+		int projectedRadius = (int) (radius*6);
+		drawStarDisplay(g, projectedRadius, Static.starPos);
+		
+		
+		int fontSize = 20;
+		g.setFont(new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 16));
+		g.drawString("Temp: " + temperature.kelvin + " K", (int)(Static.starPos.x + projectedRadius), (int)(Static.starPos.y + projectedRadius));
+		
+		g.setColor(Color.gray);
+		g.drawOval((int)(Static.starPos.x-150), (int)(Static.starPos.y-150), (int)(2*150), (int)(2*150));
+		//drawStarDotCenter(g, Static.DRAW_STAR_RADIUS_CENTER);
 	}
 	
 	
 	public void drawStarDotCenter(Graphics g, double radius){	
+		drawStarDisplay(g, radius, Static.starPos);
+		g.setColor(Color.gray);
+	}
+	
+	public void drawStarDisplay(Graphics g, double radius, Position pos){	
 		//calculates the on-screen relative position.
 		Color c1 = temperature.color;		
 		
@@ -153,12 +170,12 @@ public class Star implements Serializable{
 		Graphics2D g2 = (Graphics2D) g;
 		
 		Paint p;
-		p= new RadialGradientPaint((float)Static.starPos.x, (float)Static.starPos.y, (float)radius, fractions, colors);
+		p= new RadialGradientPaint((float)pos.x, (float)pos.y, (float)radius, fractions, colors);
 
 		g2.setPaint(p);	
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.fillOval((int)(Static.starPos.x-radius), (int)(Static.starPos.y-radius), (int)(2*radius), (int)(2*radius));
-		g2.drawImage(Static.halo.getImage(),(int)(Static.starPos.x-radius*2.5), (int)(Static.starPos.y-radius*2.5), (int)(2*radius*2.5), (int)(2*radius*2.5), null);
+		g2.fillOval((int)(pos.x-radius), (int)(pos.y-radius), (int)(2*radius), (int)(2*radius));
+		g2.drawImage(Static.halo.getImage(),(int)(pos.x-radius*2.5), (int)(pos.y-radius*2.5), (int)(2*radius*2.5), (int)(2*radius*2.5), null);
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
 	
@@ -193,6 +210,7 @@ public class Star implements Serializable{
 
 	/**
 	 * Generates a random size for the star.
+	 * Size's unit is in 100,000 KM
 	 * @param rand
 	 */
 	public void generateSize(Random rand){

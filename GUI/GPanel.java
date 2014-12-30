@@ -2,12 +2,16 @@ package GUI;
 
 
 import java.util.ArrayList;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+
 
 
 
@@ -41,6 +45,7 @@ public class GPanel extends JPanel{
 	
 	public GPanel(Frame f, Galaxy gax){
 		frame = f;
+		setupMenu();
 		setBackground(Color.BLACK);
 		
 		
@@ -53,6 +58,13 @@ public class GPanel extends JPanel{
 	
 
 
+	public void setupMenu(){
+		menu.addButton(20, 142, 132, 50, Static.SELECT_BUTTON_TEXT, Static.ruler_font18);
+		menu.addButton(20, 197, 132, 50, Static.NAME_BUTTON_TEXT, Static.ruler_font18);
+		menu.addButton(20, 252, 132, 50, Static.EXAMINE_BUTTON_TEXT, Static.ruler_font18);
+		menu.addDisplay(335, 285, MenuDisplay.STAR_SELECTED);
+		menu.addLabel(Static.STAR_SPECS_LABEL);
+	}
 		
 	/**
 	 * Draws everything.

@@ -218,9 +218,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		
 		
 		}
-		else{
-			gpanel.menu.clickedAt(arg0.getX(), arg0.getY());
-		}
+
 	}
 
 	/**
@@ -236,7 +234,9 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			mouseDownX = arg0.getX();	//8 and 30 are to eliminate frame border from coordinates
 			mouseDownY = arg0.getY();	
 		}
-			
+		else{
+			gpanel.menu.downAt(arg0.getX(), arg0.getY());
+		}
 	}
 
 	
@@ -244,6 +244,9 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	 * If mouse buttons are released
 	 */
 	public void mouseReleased(MouseEvent arg0) {
+		
+		gpanel.menu.releasedAt(arg0.getX(), arg0.getY());
+		
 		//flag that we just released mouse buttons
 		mouseIsDown = false;
 	}
@@ -273,7 +276,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 
 
 
-	@Override
+
 	public void keyPressed(KeyEvent arg0) {
 		if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if(spanel.visible){
@@ -291,7 +294,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 
 
 
-	@Override
+
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
@@ -299,7 +302,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 
 
 
-	@Override
+
 	public void keyTyped(KeyEvent arg0) {
      		
 	}
