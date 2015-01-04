@@ -21,7 +21,7 @@ public class SPanel extends JPanel{
 	public Star currentStar;
 	Star sun = new Star(0,"", new Galaxy(0,0,1, 1, 1));
 	Random rand=new Random();
-	int numPlanets = 100;
+	int numPlanets = 3;
 	public boolean visible = false;
 	
 
@@ -33,13 +33,14 @@ public class SPanel extends JPanel{
 		
 		sun.x = 950;
 		sun.y = 500;
-		
+		sun.temperature = Static.G2;
+		sun.radius = 7;
 		int i;
 		
 		for (i=0; i<numPlanets; i++)
 		{
-			int distance=50+rand.nextInt(401);
-			planets.add(new Planet(sun, rand, this, i));
+			Planet p = new Planet(sun, rand, this, i, true);
+			planets.add(p);
 		}
 		currentStar = sun;
 		super.setBackground(Color.black);
@@ -67,7 +68,7 @@ public class SPanel extends JPanel{
 			numPlanets = rand.nextInt(10);
 			
 			for(int i = 0; i < numPlanets; i++){
-				Planet p = new Planet(s, rand, this, i);
+				Planet p = new Planet(s, rand, this, i, false);
 				planets.add(p);
 			}
 		}

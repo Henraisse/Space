@@ -30,7 +30,7 @@ public class Star implements Serializable{
 	public double x;		//stjärnans globala positioner
 	public double y;
 	public double radius;		//stjärnans radie
-	public double mass;
+	//public double mass;
 	public Temperature temperature;
 	public Galaxy galax;		//galaxen stjärnan finns i
 	public ArrayList<Star> neighbors = new ArrayList<Star>();
@@ -53,9 +53,7 @@ public class Star implements Serializable{
 		//assign direct input variables
 		galax = gax;
 		star_id = i;
-		//name = "Starname HWRJ 1050";
 		nick = "Adidas";
-		mass = 100;
 		radius = 4;
 		
 		age = 50;
@@ -65,7 +63,8 @@ public class Star implements Serializable{
 		
 		//generate specs
 		temperature = setStarTemperature(rand);
-		generateSize(rand);		
+		generateSize(rand);	
+		age = rand.nextInt(10000);
 	}
 	
 	/**
@@ -141,7 +140,7 @@ public class Star implements Serializable{
 	
 	
 	public void drawStarCenter(Graphics g){		
-		int projectedRadius = (int) (radius*6);
+		int projectedRadius = (int) (radius*2);
 		drawStarDisplay(g, projectedRadius, Static.starPos);
 		
 		

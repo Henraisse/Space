@@ -45,6 +45,7 @@ public class Static {
 	
 	public static int STAR_NAME_NUMBER_COUNT = 3;
 	public static Font ruler_font8 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 8);
+	public static Font ruler_font10 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 10);
 	public static Font ruler_font12 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 12);
 	public static Font ruler_font16 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 16);
 	public static Font ruler_font18 = new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 18);	
@@ -285,7 +286,11 @@ public class Static {
 		
 	}
 	
-	
+	public static double roundOff(double x, int decimals){
+		int x0 = (int) (x * Math.pow(10, decimals));
+		double x1 = (double)(x0)/Math.pow(10, decimals);
+		return x1;
+	}
 	
 	
 	

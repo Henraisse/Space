@@ -4,10 +4,15 @@ import java.awt.Color;
 import java.util.Random;
 
 import Space.Planet;
+import Space.Star;
 
 public class Physics {
 
 	public static int PLANET_MAX_KM_RADIUS = 20000;
+	public static double BOLTZMANN_CONSTANT = 5.6704*00000000.1;
+	public static double SUN_AGE = 4600;
+	public static double SUN_RADIUS = 696342000;
+	public static double SUN_TEMP =  5778;
 
 
 	public static void calculatePlanetDensity(Planet p, int magnitude, Random rand){
@@ -48,21 +53,23 @@ public class Physics {
 	
 	
 	public static void calculatePlanetSurfaceTemperature(Planet p) {
-		double innerTempBonus = p.coreTemp - 8000; 		
-		if(innerTempBonus < 0){innerTempBonus = 0;}
-		if(innerTempBonus > 0){innerTempBonus = Math.pow(innerTempBonus, 0.65);}
-		double minTemp = 30 + Math.pow(243, (1000 - p.distance)/1000);	
+		Star s = p.star;
 		
+		double radius = s.radius*Math.pow(10, 8);
 		
-		double solarBonus = p.star.temperature.kelvin*10 /(Math.pow(p.distance, 1.4));	
-		double solarBonus2 = (sphereArea(p.star.radius/10) / sphereArea(p.distance)) * p.star.temperature.kelvin;
+		//calculates the star's total luminosity, based on the size, shape and temperature of the star.
+		double luminosity = 4.0*Math.PI*radius*radius*BOLTZMANN_CONSTANT*Math.pow(s.temperature.kelvin, 4.0);
+		//System.out.println(luminosity);
 		
+		//defines the distance from the star in the correct unit for this calculation (meters from million kilometers, m * 10^9)
+		double distance = p.distance * Math.pow(10, 9);
 		
-		p.surfaceTemp = minTemp + (innerTempBonus + solarBonus2 + solarBonus);
-		if(p.surfaceTemp < 0){p.surfaceTemp = 0;}
+		//calculates the effective temperature for this planet (the temperature without any atmosphere or greenhouse effect)
+		double effectiveTemp = Math.pow(((luminosity*(1-p.albedo))/(16*Math.PI*distance*distance*BOLTZMANN_CONSTANT)),0.25);
 		
-		System.out.println("ID: " + p.planetId);
-		System.out.println(minTemp + " " + innerTempBonus + " " + solarBonus + "\n");
+
+		double greenhouseTemp = effectiveTemp*Math.pow((1 + (0.75*p.atmosphere)), 0.25);
+		p.surfaceTemp = greenhouseTemp;
 	}
 	
 	

@@ -17,11 +17,16 @@ public class Planet {
 	public int planetId;
 	public Star star;
 	public int age;
+	
+	public double albedo;
+	public double greenhouse;
 	//temperatures
+	
 	public int coreTemp;
 	public double surfaceTemp;
 	public double dayDeviation;
 	public double summerDeviation;
+	
 	
 	public double distance;
 	public double magneticField;
@@ -42,23 +47,41 @@ public class Planet {
 
 	public double starmass=330000;
 	
-	public Planet(Star s, Random rand, SPanel sp, int id) 
+	public Planet(Star s, Random rand, SPanel sp, int id, boolean earth) 
 	{		
 		planetId = id;
 		star = s;
 		spanel = sp;
 		distance = 50+rand.nextInt(Static.MAX_SOLAR_DISTANCE);
 		
-		setSpecs(s, rand);
-		DressPlanet();
-		planetPos=new Position(Static.starPos.x + distance, Static.starPos.y);
-		trajectory=new Position(0, Math.sqrt(Static.GRAVITY_CONSTANT *starmass/(planetPos.x-Static.starPos.x))*Math.sqrt(Static.TIMEFACTOR)); // direction vector
-		trajectory=trajectory.times(0.95+(0.1*rand.nextDouble()));
 		
-		double degrees = rand.nextInt(360);
-		planetPos.rotate(distance, degrees);
-		trajectory.rotate(radius, degrees, 0, 0);
-		//printSpecs();
+		DressPlanet();
+
+
+
+		if(earth){
+			distance = (id*50) + 100;
+			if(id == 0){
+				//VENUS
+				albedo = 0.750; 
+				atmosphere = 92.0;
+				//greenhouse = 92.0;
+			}
+			if(id == 1){
+				//EARTH
+				albedo = 0.306;
+				atmosphere = 1.0;
+				//greenhouse = 1.0;
+			}
+			if(id == 2){
+				//MARS
+				albedo = 0.250;
+				atmosphere = 0.01;
+				//greenhouse = 0.01;
+			}
+		}
+		setSpecs(s, rand);
+		setTrajectory(rand);
 	}
 
 	public void setSpecs(Star s, Random rand){
@@ -96,6 +119,18 @@ public class Planet {
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		printPlanetStats(g);
 	}
+	
+	
+	public void setTrajectory(Random rand){
+		planetPos=new Position(Static.starPos.x + distance, Static.starPos.y);
+		trajectory=new Position(0, Math.sqrt(Static.GRAVITY_CONSTANT *starmass/(planetPos.x-Static.starPos.x))*Math.sqrt(Static.TIMEFACTOR)); // direction vector
+		trajectory=trajectory.times(0.95+(0.1*rand.nextDouble()));
+		
+		double degrees = rand.nextInt(360);
+		planetPos.rotate(distance, degrees);
+		trajectory.rotate(radius, degrees, 0, 0);
+	}
+	
 	
 	public void UpdateTrajectory()
 	{
