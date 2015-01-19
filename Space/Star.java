@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import GUI.GPanel;
+import Static.Physics;
 import Static.Position;
 import Static.Static;
 import Static.Temperature;
 
 
 public class Star implements Serializable{
+	
+	public static double STAR_CENTER_SIZE_MULTIPLIER = 2.5;
 	
 	//GLOBAL VARIABLES
 	public int age = 10000;
@@ -37,6 +40,7 @@ public class Star implements Serializable{
 	
 	boolean flagged;
 	boolean flag_for_removal;
+	public double mass;
 
 
 
@@ -55,7 +59,7 @@ public class Star implements Serializable{
 		star_id = i;
 		nick = "Adidas";
 		radius = 4;
-		
+		mass = 330000;
 		age = 50;
 		
 		//create a random generator, to randomize a position, temperatur and size
@@ -65,6 +69,9 @@ public class Star implements Serializable{
 		temperature = setStarTemperature(rand);
 		generateSize(rand);	
 		age = rand.nextInt(10000);
+		
+		//System.out.println("Maximum distance: " + Physics.getMaxPlanetDistance(this));
+		//System.out.println("Minimum distance: " + Physics.getMinPlanetDistance(this));
 	}
 	
 	/**
@@ -139,23 +146,27 @@ public class Star implements Serializable{
 
 	
 	
-	public void drawStarCenter(Graphics g){		
-		int projectedRadius = (int) (radius*2);
-		drawStarDisplay(g, projectedRadius, Static.starPos);
+	public void drawStarCenter(Graphics g, double zoom, boolean printText){		
+		double projectedRadius = (radius*zoom*STAR_CENTER_SIZE_MULTIPLIER);
+		if(projectedRadius < 1){projectedRadius = 1;}
+		drawStarDisplay(g, projectedRadius, Static.starCenterPos);
 		
 		
 		int fontSize = 20;
 		g.setFont(new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, 16));
-		g.drawString("Temp: " + temperature.kelvin + " K", (int)(Static.starPos.x + projectedRadius), (int)(Static.starPos.y + projectedRadius));
+		
+		if(printText){
+			g.drawString("Temp: " + temperature.kelvin + " K", (int)(Static.starCenterPos.x + projectedRadius), (int)(Static.starCenterPos.y + projectedRadius));
+		}
 		
 		g.setColor(Color.gray);
-		g.drawOval((int)(Static.starPos.x-150), (int)(Static.starPos.y-150), (int)(2*150), (int)(2*150));
+		//g.drawOval((int)(Static.starPos.x-(150.0*zoom)), (int)(Static.starPos.y-(150.0*zoom)), (int)(2*(150.0*zoom)), (int)(2*(150.0*zoom)));
 		//drawStarDotCenter(g, Static.DRAW_STAR_RADIUS_CENTER);
 	}
 	
 	
 	public void drawStarDotCenter(Graphics g, double radius){	
-		drawStarDisplay(g, radius, Static.starPos);
+		drawStarDisplay(g, radius, Static.starCenterPos);
 		g.setColor(Color.gray);
 	}
 	
@@ -226,6 +237,9 @@ public class Star implements Serializable{
 			radius = rand.nextInt(10)+15;
 		}
 	}
+	
+	
+	
 	
 
 }

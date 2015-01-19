@@ -28,8 +28,10 @@ import Static.Static;
 public class Frame extends JFrame implements MouseWheelListener, MouseListener, KeyListener{
 	
 	private static final double ZOOM_SPEED_BOUNDARY = 0.01;
-	private static final double ZOOM_SCALE_MAX = 10000000;
-	static final double ZOOM_SCALE_MIN = 0.1;
+	private static final double ZOOM_SCALE_MAX_GP = 10000000;
+	static final double ZOOM_SCALE_MIN_GP = 0.1;
+	private static final double ZOOM_SCALE_MAX_SP = 10;
+	static final double ZOOM_SCALE_MIN_SP = 0.1;
 	Galaxy gax;
 	double momentum = 0;
 	
@@ -99,16 +101,27 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	 * Updates the Frame and screen every 20 milliseconds
 	 */
 	public void update(){
+		if(spanel.active){
+			spanel.Update();
+		}
+		
+		
 		getContentPane().validate();
 		getContentPane().repaint();
 		
-		updateZoomScale();
+		if(gpanel.active){
+			updateZoomScaleGP();
+		}
+		else{
+			updateZoomScaleSP();
+		}
+		
 	    updateMouseDrag();		
 		enforceBoundaries();
 		
-		spanel.Update();
+		
 				
-		sleep(10);
+		sleep(20);
 	}
 
 	/**
@@ -119,11 +132,22 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		
 			//if zooming in, add some momentum to the zooming
 			if(e.getWheelRotation() < 0){
-				momentum += gpanel.zoom_scale/10;
+				if(gpanel.active){
+					momentum += gpanel.zoom_scale/10;
+				}
+				else if(spanel.active){
+					momentum += spanel.zoom_scale/10;
+				}
+				
 			}
 			//if zooming out, add some momentum to the zooming
 			else{
-				momentum -= gpanel.zoom_scale/10;
+				if(gpanel.active){
+					momentum -= gpanel.zoom_scale/10;
+				}
+				else if(spanel.active){
+					momentum -= spanel.zoom_scale/10;
+				}
 			}
 			//save the cursor position 
 			mouseScrollX = getMouseX();
@@ -171,7 +195,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	/**
 	 * If we have some Zoom momentum, continue the zoom
 	 */
-	public void updateZoomScale(){		    
+	public void updateZoomScaleGP(){		    
 		//as long as we have a momentum worth mentioning, zoom, otherwise kill the zoom
 		if ((momentum > ZOOM_SPEED_BOUNDARY || momentum < -ZOOM_SPEED_BOUNDARY)) {
 			double zoom_step = 0;
@@ -197,8 +221,38 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			momentum = 0;
 		}	
 		//make sure we do not zoom in or out too much
-		if(gpanel.zoom_scale > ZOOM_SCALE_MAX){gpanel.zoom_scale = ZOOM_SCALE_MAX;momentum = 0;}
-		if(gpanel.zoom_scale < ZOOM_SCALE_MIN){gpanel.zoom_scale = ZOOM_SCALE_MIN;momentum = 0;}
+		if(gpanel.zoom_scale > ZOOM_SCALE_MAX_GP){gpanel.zoom_scale = ZOOM_SCALE_MAX_GP;momentum = 0;}
+		if(gpanel.zoom_scale < ZOOM_SCALE_MIN_GP){gpanel.zoom_scale = ZOOM_SCALE_MIN_GP;momentum = 0;}
+	}
+	
+	public void updateZoomScaleSP(){		    
+		//as long as we have a momentum worth mentioning, zoom, otherwise kill the zoom
+		if ((momentum > ZOOM_SPEED_BOUNDARY || momentum < -ZOOM_SPEED_BOUNDARY)) {
+			double zoom_step = 0;
+			//take a piece from momentum
+			if(momentum > 0){
+				zoom_step = momentum / ZOOM_SPEED;
+			}
+			else{
+				if(momentum/gpanel.zoom_scale < -1){
+					momentum = -1*spanel.zoom_scale;
+				}
+				
+				zoom_step = momentum / (ZOOM_SPEED);
+			}
+			momentum -= zoom_step;
+			
+			//calculate steps
+			spanel.zoom_scale += zoom_step;										
+//			spanel.zoom_x -= (zoom_step*mouseScrollX)/(spanel.zoom_scale*spanel.zoom_scale);
+//			spanel.zoom_y -= (zoom_step*mouseScrollY)/(spanel.zoom_scale*spanel.zoom_scale);			
+		}
+		else{
+			momentum = 0;
+		}	
+		//make sure we do not zoom in or out too much
+		if(spanel.zoom_scale > ZOOM_SCALE_MAX_SP){spanel.zoom_scale = ZOOM_SCALE_MAX_SP;momentum = 0;}
+		if(spanel.zoom_scale < ZOOM_SCALE_MIN_SP){spanel.zoom_scale = ZOOM_SCALE_MIN_SP;momentum = 0;}
 	}
 
 	/**
@@ -225,7 +279,8 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	 * If mouse buttons are pressed.
 	 */
 	public void mousePressed(MouseEvent arg0) {
-		if(!gpanel.menu.withinBounds(arg0.getX(),arg0.getY())){
+
+		if(!gpanel.menu.withinBounds(arg0.getX(),arg0.getY()) || !spanel.menu.withinBounds(arg0.getX(),arg0.getY())){
 			//Kill of momentum
 			momentum = 0;
 			
@@ -235,7 +290,12 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			mouseDownY = arg0.getY();	
 		}
 		else{
-			gpanel.menu.downAt(arg0.getX(), arg0.getY());
+			if(gpanel.active){
+				gpanel.menu.downAt(arg0.getX(), arg0.getY());
+			}
+			else if(spanel.active){
+				spanel.menu.downAt(arg0.getX(), arg0.getY());
+			}
 		}
 	}
 
@@ -244,7 +304,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	 * If mouse buttons are released
 	 */
 	public void mouseReleased(MouseEvent arg0) {
-		
+		spanel.menu.releasedAt(arg0.getX(), arg0.getY());
 		gpanel.menu.releasedAt(arg0.getX(), arg0.getY());
 		
 		//flag that we just released mouse buttons
@@ -279,8 +339,13 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 
 	public void keyPressed(KeyEvent arg0) {
 		if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			if(spanel.visible){
-				spanel.visible = false;
+			if(spanel.active){
+				spanel.currentStar = null;
+				spanel.planets.clear();
+				
+				momentum = 0;
+				spanel.active = false;
+				gpanel.active = true;
 				remove(spanel);
 				add(gpanel);
 			}
@@ -288,7 +353,25 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 				System.exit(0);
 			}
             
-        }  
+        }
+		else if(spanel.active && arg0.getKeyCode() == KeyEvent.VK_UP){
+			if(spanel.manual_orbits){
+				spanel.rotationSpeed += 0.5;				
+			}
+			else{
+				spanel.days+=2.0;
+			}
+			//
+			
+		}
+		else if(spanel.active && arg0.getKeyCode() == KeyEvent.VK_DOWN){
+			if(spanel.manual_orbits){
+				spanel.rotationSpeed -= 0.5;
+			}
+			else{
+				spanel.days-=2.0;
+			}
+		}
 		
 	}
 

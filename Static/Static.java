@@ -22,7 +22,7 @@ import Space.Star;
 public class Static {
 	
 	//PHYSICS
-	public static double slowDown = 200;
+	public static double slowDown = 590;
 	public static double mult=1.43/slowDown;
 	public static double TIMEFACTOR=31536000*mult;
 	public static double GRAVITY_CONSTANT = 0.0000000000673;
@@ -30,13 +30,21 @@ public class Static {
 	public static double SOLAR_WIND_SPEED = 400000;
 	public static double SOLAR_WIND_PARTICLE_INITIAL_DENSITY = 10;
 	
+	public static int ITERATIONS_PER_DAY = 24;
+	
 	//GLOBAL VARIABLES
 	public static int LINEAR = 1;
 	public static int EXPONENTIAL = 2;
 	public static final int POLYNOMIAL = 3;
 	
 	private static final double NEIGHBOR_DISTANCE = 0.1;
-	public static final String STAR_SPECS_LABEL = "ssl";	
+	public static final String STAR_SPECS_LABEL = "ssl";
+	public static final Position STAR_DISPLAY_POS = new Position(1585+153, 135+146);
+	public static final String GALAXY_STAR_DISPLAY = "gstd";
+	public static final double STAR_DISPLAY_SIZE_MULTIPLIER = 7.0;
+	public static final String DISPLAY_DESCRIPTION_TEXT = "Display Descriptions";
+	public static final String MANUAL_ORBIT_SWITCH_TEXT = "Manual Orbits";
+
 	public static String DISTANCE_RULER_FONT = "BoomBox 2";
 	
 	public static Color STAR_NAME_COLOR = new Color(96,96,255);
@@ -90,15 +98,76 @@ public class Static {
 	public static String SELECT_BUTTON_TEXT = "Select";
 	public static String EXAMINE_BUTTON_TEXT = "Examine";
 	public static String NAME_BUTTON_TEXT = "Name";
+	public static String DISPLAY_ORBITS_BUTTON_TEXT = "Display Orbits";	
 	
 	public static ImageIcon halo = new ImageIcon("star_halo.png");
 	public static ImageIcon planet01 = new ImageIcon("planet01.png");
 	public static ImageIcon planet02 = new ImageIcon("planet02.png");
 	public static ImageIcon planet03 = new ImageIcon("planet03.png");
+	
+	public static ImageIcon venus = new ImageIcon("planets/planets_color/desert/venus.png");
+	public static ImageIcon earth = new ImageIcon("planets/planets_color/life/earth.png");
+	public static ImageIcon mars = new ImageIcon("planets/planets_color/desert/mars.png");
+	
+	public static ImageIcon[] planetLifes = {
+		new ImageIcon("planets/planets_color/life/earth.png"),
+		new ImageIcon("planets/planets_color/life/earth2.png"),
+		new ImageIcon("planets/planets_color/life/planet23.png"),
+		new ImageIcon("planets/planets_color/life/planet25.png"),
+		new ImageIcon("planets/planets_color/life/planet26.png"),
+		new ImageIcon("planets/planets_color/life/planet27.png")
+	};
+	
+	public static ImageIcon[] planetGasgiants = {
+//		new ImageIcon("planets/planets_color/gasGiant/planet01"),	DESSA HAR EGEN FÄRG
+//		new ImageIcon("planets/planets_color/gasGiant/planet05"),
+//		new ImageIcon("planets/planets_color/gasGiant/planet07"),
+//		new ImageIcon("planets/planets_color/gasGiant/planet12"),
+//		new ImageIcon("planets/planets_color/gasGiant/planet18"),
+//		new ImageIcon("planets/planets_color/gasGiant/planet20"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet01.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet05.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet07.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet12.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet18.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet20.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet29.png"),
+		new ImageIcon("planets/planets_gray/gasGiant/planet31.png"),
+	};
+	
+	public static ImageIcon[] planetIces = {
+		new ImageIcon("planets/planets_color/ice/planet06.png"),
+		new ImageIcon("planets/planets_color/ice/planet16.png"),
+		new ImageIcon("planets/planets_color/ice/planet24.png")
+	};
+	
+	public static ImageIcon[] planetLava = {
+		new ImageIcon("planets/planets_color/lava/planet15.png")
+	};
+	
+	public static ImageIcon[] planetBarren = {
+		new ImageIcon("planets/planets_gray/desert/planet02.png"),
+		new ImageIcon("planets/planets_gray/desert/planet13.png"),
+		new ImageIcon("planets/planets_gray/desert/planet14.png"),
+		new ImageIcon("planets/planets_gray/desert/planet28.png"),
+		new ImageIcon("planets/planets_gray/desert/planet30.png"),
+		new ImageIcon("planets/planets_gray/rock/planet04.png"),
+		new ImageIcon("planets/planets_gray/rock/planet08.png"),
+		new ImageIcon("planets/planets_gray/rock/planet09.png"),
+		new ImageIcon("planets/planets_gray/rock/planet10.png"),
+		new ImageIcon("planets/planets_gray/rock/planet11.png"),
+		new ImageIcon("planets/planets_gray/rock/planet17.png"),
+		new ImageIcon("planets/planets_gray/rock/planet19.png"),
+		new ImageIcon("planets/planets_gray/rock/planet21.png"),
+		new ImageIcon("planets/planets_gray/rock/planet22.png"),		
+	};
+
+	
+	
 	public static ImageIcon StarSystemBackground01 = new ImageIcon("StarSystemBackground01.png");
 
 	//GLOBAL STATIC FUNCTIONS
-	public static Position starPos=new Position(950, 500);
+	public static Position starCenterPos=new Position(700, 540);
 	
 	/**
 	 * Create a distribution between 1 and 0. Uses the parameters
@@ -194,7 +263,10 @@ public class Static {
 	 */
 	public static void calculateNeighbors(Star s){
 //		int c = 0;
-		for(int i = (int) (s.x-s.galax.sector_size); i <= s.x+s.galax.sector_size; i+= s.galax.sector_size){
+		for(int i = (int) (s.x-
+				s.galax.sector_size); 
+				i <= s.x+s.galax.sector_size; 
+				i+= s.galax.sector_size){
 			for(int j = (int) (s.y-s.galax.sector_size); j <= s.y+s.galax.sector_size; j+= s.galax.sector_size){
 				ArrayList<Star> sector = getSector(s.galax, i, j);
 				for(Star n: sector){
@@ -264,26 +336,41 @@ public class Static {
 		
 	public static void calculatePlanetColor(Planet p){
 		//System.out.println(p.surfaceTemp);
-		int color = new Random().nextInt(10);
-		switch(color){
-		case 0: p.color = Color.red; break;
-		case 1: p.color = Color.blue; break;
-		case 2: p.color = Color.yellow; break;
-		case 3: p.color = Color.green; break;
-		case 4: p.color = Color.pink; break;
-		case 5: p.color = Color.white; break;
-		case 6: p.color = Color.black; break;
-		case 7: p.color = Color.cyan; break;
-		case 8: p.color = Color.magenta; break;
-		case 9: p.color = Color.orange; break;
-		
-		}
+//		int color = new Random().nextInt(10);
+//		switch(color){
+//		case 0: p.color = Color.red; break;
+//		case 1: p.color = Color.blue; break;
+//		case 2: p.color = Color.yellow; break;
+//		case 3: p.color = Color.green; break;
+//		case 4: p.color = Color.pink; break;
+//		case 5: p.color = Color.white; break;
+//		case 6: p.color = Color.black; break;
+//		case 7: p.color = Color.cyan; break;
+//		case 8: p.color = Color.magenta; break;
+//		case 9: p.color = Color.orange; break;
+//		
+//		}
 		//p.color = Color.red;
 		//if(p.surfaceTemp < 0){p.color = new Color(118,98,98);}
 		//else if(p.surfaceTemp < 20){p.color = new Color(218,98,98);}
 		//else if(p.surfaceTemp < 100){p.color = new Color(118,98,98);}
 		//else if(p.surfaceTemp < 200){p.color = new Color(0,0,98);}
 		
+		//p.image = planetImages[p.star.galax.randomGenerator.nextInt(33)];
+		p.color = randColor(p.star.galax.randomGenerator);
+		
+		if(p.gasGiant){
+			p.image = planetGasgiants[p.star.galax.randomGenerator.nextInt(8)];
+		}
+		else if(p.surfaceTemp < 50 || (p.surfaceTemp < 250 && p.water)){
+			p.image = planetIces[p.star.galax.randomGenerator.nextInt(3)];
+		}
+		else if(p.life){
+			p.image = planetLifes[p.star.galax.randomGenerator.nextInt(6)];
+		}
+		else{
+			p.image = planetBarren[p.star.galax.randomGenerator.nextInt(14)];
+		}
 	}
 	
 	public static double roundOff(double x, int decimals){
@@ -292,10 +379,79 @@ public class Static {
 		return x1;
 	}
 	
+	public static double randDouble(double a, double b){
+		Random rand = new Random();
+		return (rand.nextDouble()*a)+b;
+	}
+	
+	public static int randInt(int a, int b){
+		Random rand = new Random();
+		return (rand.nextInt(a))+b;
+	}
+	
+	public static int randInt(int a, int b, Random rand){
+		return (rand.nextInt(a))+b;
+	}
+	
+	public static Color randColor(){
+		int red = randInt(255, 1);
+		int green = randInt(255, 1);
+		int blue = randInt(255, 1);
+		return new Color(red, green, blue);
+	}
+	
+	public static Color randColor(Random rand){
+		int red = randInt(255, 1, rand);
+		int green = randInt(255, 1, rand);
+		int blue = randInt(255, 1, rand);
+		return new Color(red, green, blue);
+	}
 	
 	
+	public static String yesNo(boolean yes){
+		if(yes){
+			return "Yes";
+		}
+		return "No";
+	}
 	
 	
+	public static ArrayList<Planet> getStarPlanets(Star s){
+		Random rand = new Random(s.star_id);
+		ArrayList<Planet> newPlanets = new ArrayList<Planet>();
+		
+		if(s.star_id == 0){
+			for (int i=0; i<3; i++)
+			{
+				Planet p = new Planet(s, rand, i, true, newPlanets);
+				newPlanets.add(p);
+			}
+		}
+		else{
+			int numPlanets = rand.nextInt(Physics.getMaxNumPlanets(s));		
+			for(int i = 0; i < numPlanets; i++){
+				Planet p = new Planet(s, rand, i, false, newPlanets);
+				newPlanets.add(p);
+			}
+		}
+		return newPlanets;
+	}
+	
+	public static void setUpSun(Galaxy g){
+		
+		Star sun = new Star(0, "", g);
+		//g.generatePosition(g.randomGenerator, sun);
+		g.sun = sun;
+		g.stars.add(sun);
+		
+		sun.x = 6950;
+		sun.y = 8100;
+		sun.temperature = Static.G2;
+		sun.radius = 7;
+		//sun.mass = 330000;
+
+		g.selected_star = sun;
+	}
 	
 }
 

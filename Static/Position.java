@@ -135,6 +135,19 @@ public class Position implements Serializable{
 //		double newX = pt[0];
 //		double newY = pt[1];
  }
+ 
+ public Position clone(){
+	 Position p = new Position(0, 0);
+	 p.x = x;
+	 p.y = y;
+	 
+	 return p;
+ }
+ 
+ public void clone(Position p){
+	 x = p.x;
+	 y = p.y;
+ }
     
 }
 

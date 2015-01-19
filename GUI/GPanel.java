@@ -27,7 +27,7 @@ import Static.Static;
 public class GPanel extends JPanel{
 	public Frame frame;
 	
-	public double zoom_scale = Frame.ZOOM_SCALE_MIN;
+	public double zoom_scale = Frame.ZOOM_SCALE_MIN_GP;
 	public double zoom_x = 0;
 	public double zoom_y = 0;
 	
@@ -42,6 +42,8 @@ public class GPanel extends JPanel{
 	public Galaxy galax;
 	
 	Menu menu = new Menu(this, 1410,0,1900,1200);
+
+	public boolean active = true;
 	
 	public GPanel(Frame f, Galaxy gax){
 		frame = f;
@@ -62,7 +64,7 @@ public class GPanel extends JPanel{
 		menu.addButton(20, 142, 132, 50, Static.SELECT_BUTTON_TEXT, Static.ruler_font18);
 		menu.addButton(20, 197, 132, 50, Static.NAME_BUTTON_TEXT, Static.ruler_font18);
 		menu.addButton(20, 252, 132, 50, Static.EXAMINE_BUTTON_TEXT, Static.ruler_font18);
-		menu.addDisplay(335, 285, MenuDisplay.STAR_SELECTED);
+		menu.addDisplay();
 		menu.addLabel(Static.STAR_SPECS_LABEL);
 	}
 		

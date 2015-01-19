@@ -20,7 +20,8 @@ public class Menu {
 	public ImageIcon image1;
 	public ImageIcon image2;
 	public Image menuImg;
-	public GPanel panel;
+	public GPanel gpanel;
+	public SPanel spanel;
 	
 	int x0;
 	int x1;
@@ -37,7 +38,20 @@ public class Menu {
 	
 	public Menu(GPanel p, int x0, int y0, int x1, int y1){
 
-		panel = p;
+		gpanel = p;
+		this.x0 = x0;
+		this.x1 = x1;
+		this.y0 = y0;
+		this.y1 = y1;
+		image1 = new ImageIcon("menu1.png");
+		menuImg = image1.getImage();
+		
+		//set up buttons
+	}
+	
+	public Menu(SPanel p, int x0, int y0, int x1, int y1){
+
+		spanel = p;
 		this.x0 = x0;
 		this.x1 = x1;
 		this.y0 = y0;
@@ -53,8 +67,8 @@ public class Menu {
 		buttons.add(b1);
 	}
 	
-	public void addDisplay(int x, int y, int z){
-		MenuDisplay md = new MenuDisplay(x, y, z, this);
+	public void addDisplay(){
+		MenuDisplay md = new MenuDisplay(this, Static.GALAXY_STAR_DISPLAY);
 		displays.add(md);
 	}
 	
@@ -95,9 +109,12 @@ public class Menu {
 	}
 	
 	public void paint(Graphics g){
+		
+		
 		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.drawImage(menuImg,x0,y0,MENU_WIDTH, MENU_HEIGHT, null);
-
+		if(gpanel != null){}
+		else if(spanel != null){}
 		//rita upp alla knappar
 		g.setColor(Color.blue);
 		for(MenuButton mb : buttons){

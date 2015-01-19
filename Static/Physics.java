@@ -8,6 +8,9 @@ import Space.Star;
 
 public class Physics {
 
+	private static final double VAPORIZATION_TEMPERATURE = 1500;
+	private static final double PLANET_MIN_SPEED = 0.03;
+	private static final double PLANET_DISTANCE_MULTIPLIER = 0.33;
 	public static int PLANET_MAX_KM_RADIUS = 20000;
 	public static double BOLTZMANN_CONSTANT = 5.6704*00000000.1;
 	public static double SUN_AGE = 4600;
@@ -16,7 +19,7 @@ public class Physics {
 
 
 	public static void calculatePlanetDensity(Planet p, int magnitude, Random rand){
-		double density = (magnitude - ((p.distance/Static.MAX_SOLAR_DISTANCE)*magnitude) + (rand.nextDouble()*magnitude/10.0))* 1000;
+		double density = (magnitude - ((p.distance/(Static.MAX_SOLAR_DISTANCE*3))*magnitude) + (rand.nextDouble()*magnitude/10.0))* 1000;
 		if(density < 0.7){density = 0.7;}		
 		if(density < 2){p.radius *= Math.pow(3, 2*(2-density));}
 		if(density < 1.5){p.gasGiant = true;}
@@ -41,14 +44,14 @@ public class Physics {
 	}
 
 	
-	public static void calculatePlanetAtmosphere(Planet p){
+	public static void calculatePlanetAtmosphere(Planet p, Random rand){
 		double solarWind = 1.6726 * (1.0/1000000.0) * Static.SOLAR_WIND_SPEED * Static.SOLAR_WIND_PARTICLE_INITIAL_DENSITY / (p.distance*p.distance);	
-		//System.out.println("solar wind: " + solarWind);
-		//System.out.println("gravity: " + p.gravity);
-		//p.atmosphere = (p.gravity - solarWind - 20) + (p.magneticField/5);
 		p.atmosphere = (p.gravity - solarWind) + (p.magneticField/5);
-		if(p.atmosphere<0){p.atmosphere=0;}
-		//System.out.println("atmosphere: " + p.atmosphere);
+		
+		int chance = rand.nextInt(101);
+		if(chance < 65 || p.atmosphere<0){
+			p.atmosphere=0;
+		}
 	}
 	
 	
@@ -72,6 +75,31 @@ public class Physics {
 		p.surfaceTemp = greenhouseTemp;
 	}
 	
+	
+	public static double getMinPlanetDistance(Star s){
+		double radius = s.radius*Math.pow(10, 8);
+		double luminosity = 4.0*Math.PI*radius*radius*BOLTZMANN_CONSTANT*Math.pow(s.temperature.kelvin, 4.0);
+		double temperature = 100000;
+		double distance = 10;
+		while(temperature > Physics.VAPORIZATION_TEMPERATURE){
+			distance += 10;
+			double dist0 =distance * Math.pow(10, 9);
+			temperature = Math.pow(((luminosity*(1))/(16*Math.PI*dist0*dist0*BOLTZMANN_CONSTANT)),0.25);
+			//System.out.println(temperature);
+		}
+		
+		return distance;
+	}
+	
+	public static double getMaxPlanetDistance(Star s){
+		int distance = 0;
+		double speed = 1000;
+		while(speed > PLANET_MIN_SPEED){
+			distance+=10;
+			speed=Math.sqrt(Static.GRAVITY_CONSTANT *s.mass/(distance))*Math.sqrt(Static.TIMEFACTOR); // direction vector
+		}
+		return distance*PLANET_DISTANCE_MULTIPLIER;		
+	}
 	
 	
 	public static double sphereArea(double radius){
@@ -109,6 +137,16 @@ public class Physics {
 
 		
 		return Color.black;
+	}
+	
+	
+	/**
+	 * Calculates the maximum number of orbiting planetary bodies.
+	 * @param s
+	 * @return
+	 */
+	public static int getMaxNumPlanets(Star s){
+		return (int) (2*Math.sqrt(s.mass/1000)/3);
 	}
 }
 

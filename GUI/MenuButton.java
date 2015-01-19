@@ -25,6 +25,7 @@ public class MenuButton {
 	int height;
 	String text;
 	
+	boolean isSwitch = false;
 	boolean clicked = false;
 	boolean isDown = false;
 	boolean f = false;
@@ -93,30 +94,44 @@ public class MenuButton {
 	
 	
 	public void paint(Graphics g){
-		g.setColor(Color.black);
-		if(isDown){
-			g.setColor(Color.red);
-			//g.drawImage(menuImg,x0,y0,510,1080, null);
-		}
-		//g.drawRect(x, y, length, height);
-
-
-		g.drawImage(menuImg,x,y,132,50, null);
-
 		g.setFont(f1);
+				
+		if(isDown || isSwitch){
+			g.setColor(Color.red);
+			g.drawImage(image2.getImage(),x,y,132,50, null);
+		}
+		else{
+			g.setColor(Color.black);
+			g.drawImage(image1.getImage(),x,y,132,50, null);
+		}
+
+
+		
 		g.drawString(text, x+10, y+height-(25-f1.getSize()/2));
 	}
 	
 	public void action(){
 		if(text.equals(Static.EXAMINE_BUTTON_TEXT)){
-			Frame frame = menu.panel.frame;			
+			Frame frame = menu.gpanel.frame;			
 			frame.remove(frame.gpanel);
 			frame.add(frame.spanel);
+			frame.spanel.active = true;
+			frame.gpanel.active = false;
+			//frame.gpanel.galax.selected_star = frame.spanel.currentStar;
 			Star s = frame.gpanel.galax.selected_star;
 			frame.spanel.setStar(s);
+			frame.momentum = 0;
 		}
-
-		
+		if(text.equals(Static.DISPLAY_ORBITS_BUTTON_TEXT)){
+			menu.spanel.display_orbits = !menu.spanel.display_orbits;
+		}
+		if(text.equals(Static.DISPLAY_DESCRIPTION_TEXT)){
+			menu.spanel.display_descriptions = !menu.spanel.display_descriptions;
+		}
+		if(text.equals(Static.MANUAL_ORBIT_SWITCH_TEXT)){
+			isSwitch = !isSwitch;
+			menu.spanel.manual_orbits = !menu.spanel.manual_orbits;
+		}
 	}
 	
 }

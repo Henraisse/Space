@@ -23,6 +23,7 @@ public class Galaxy implements Serializable{
 	public static int NUMBER_OF_GALAXY_ARMS = 6;	
 	public static int RADIUS = 0;	
 	
+	public Star sun;
 	public Star selected_star = null;
 	public static double x = 0;
 	public static double y = 0;
@@ -53,7 +54,9 @@ public class Galaxy implements Serializable{
 		stars = new ArrayList<Star>();
 		randomGenerator = new Random(id);
 		
-		for(int i = 0; i < NUMBER_OF_STARS; i++){
+		Static.setUpSun(this);
+						
+		for(int i = 1; i < NUMBER_OF_STARS; i++){
 			Star new_star = new Star(i, "", this);
 			generatePosition(randomGenerator, new_star);
 			//placeInMatrix(new_star);
@@ -62,9 +65,9 @@ public class Galaxy implements Serializable{
 						
 		center = new BlackHole(starCount, galaxy_center_x, galaxy_center_y, this);
 		
-		for(Star s: stars){
-			Static.calculateNeighbors(s);
-		}
+//		for(Star s: stars){
+//			Static.calculateNeighbors(s);
+//		}
 	}
 
 	/**
@@ -212,6 +215,10 @@ public class Galaxy implements Serializable{
 	public void placeInSector(Star s){
 		int x = (int)(s.x/sector_size);
 		int y = (int)(s.y/sector_size);
+		
+		if(x < 0 || y < 0){
+			System.out.println(s.x + " " + s.y);
+		}
 		
 		sectors[x][y].add(s);						
 	}
