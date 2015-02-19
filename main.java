@@ -8,12 +8,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import GUI.Frame;
+import Static.Game;
 
 import java.awt.event.*;
 public class main {
 
 	public static void main(String[] args) {
 
-		Frame f = new Frame();
+		Game g = new Game();
+		Frame f = new Frame(g);
 	}
 }

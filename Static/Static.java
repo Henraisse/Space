@@ -1,6 +1,7 @@
 package Static;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -20,6 +21,9 @@ import Space.Star;
 
 
 public class Static {
+	
+	public static Double lightYearsToMillionKM = 9460528.4;
+	public static Double Orbits = -80.4;
 	
 	//PHYSICS
 	public static double slowDown = 590;
@@ -99,6 +103,8 @@ public class Static {
 	public static String EXAMINE_BUTTON_TEXT = "Examine";
 	public static String NAME_BUTTON_TEXT = "Name";
 	public static String DISPLAY_ORBITS_BUTTON_TEXT = "Display Orbits";	
+	
+	public static ImageIcon boosters = new ImageIcon("boosters.png");
 	
 	public static ImageIcon halo = new ImageIcon("star_halo.png");
 	public static ImageIcon planet01 = new ImageIcon("planet01.png");
@@ -261,31 +267,31 @@ public class Static {
 	 * Searches the stars sector and neighboring sectors for possible twin stars
 	 * @param s
 	 */
-	public static void calculateNeighbors(Star s){
-//		int c = 0;
-		for(int i = (int) (s.x-
-				s.galax.sector_size); 
-				i <= s.x+s.galax.sector_size; 
-				i+= s.galax.sector_size){
-			for(int j = (int) (s.y-s.galax.sector_size); j <= s.y+s.galax.sector_size; j+= s.galax.sector_size){
-				ArrayList<Star> sector = getSector(s.galax, i, j);
-				for(Star n: sector){
-					double d = distance(s.x, s.y, n.x, n.y);
-					//if distance to other star is less than one thousandth of a light year
-					if(d < NEIGHBOR_DISTANCE){
-						
-						//add that star to neighbors
-						if(!s.equals(n)){
-							s.neighbors.add(n);
-						}
-					}
-				}
-			}
-		}
-//		if(c > 0){
-//			//System.out.println(c + " neighbors");
+//	public static void calculateNeighbors(Star s){
+////		int c = 0;
+//		for(int i = (int) (s.x-
+//				s.galax.sector_size); 
+//				i <= s.x+s.galax.sector_size; 
+//				i+= s.galax.sector_size){
+//			for(int j = (int) (s.y-s.galax.sector_size); j <= s.y+s.galax.sector_size; j+= s.galax.sector_size){
+//				ArrayList<Star> sector = getSector(s.galax, i, j);
+//				for(Star n: sector){
+//					double d = distance(s.x, s.y, n.x, n.y);
+//					//if distance to other star is less than one thousandth of a light year
+//					if(d < NEIGHBOR_DISTANCE){
+//						
+//						//add that star to neighbors
+//						if(!s.equals(n)){
+//							s.neighbors.add(n);
+//						}
+//					}
+//				}
+//			}
 //		}
-	}
+////		if(c > 0){
+////			//System.out.println(c + " neighbors");
+////		}
+//	}
 
 	
 	public static double distance(double x0, double y0, double x1, double y1){
@@ -452,6 +458,55 @@ public class Static {
 
 		g.selected_star = sun;
 	}
+	
+	public static void createSpaceCraft(){
+		
+	}
+	
+	
+	public static ArrayList<Point> neighboringPoints(Point p, int x, int y){
+		ArrayList<Point> points = new ArrayList<Point>();
+		//System.out.println("neighboringPoints");
+		Point p0 = new Point(p.x+1, p.y+1);
+		Point p1 = new Point(p.x+1, p.y);
+		Point p2 = new Point(p.x+1, p.y-1);
+		Point p3 = new Point(p.x, p.y+1);
+		Point p4 = new Point(p.x, p.y);
+		Point p5 = new Point(p.x, p.y-1);
+		Point p6 = new Point(p.x-1, p.y+1);
+		Point p7 = new Point(p.x-1, p.y);
+		Point p8 = new Point(p.x-1, p.y-1);
+		Point[] ps = {p0, p1, p2, p3, p4, p5, p6, p7, p8};
+		for(Point pp : ps){
+			if(pp.x >= 0 && pp.x < x){
+				if(pp.y >= 0 && pp.y < y){
+					points.add(pp);
+				}
+			}
+		}
+		
+		return points;
+	}
+	
+	public static ArrayList<Star> getNeighbors(Star s){
+		Galaxy g = s.galax;
+		ArrayList<Star> stars = new ArrayList<Star>();
+		ArrayList<Point> points = neighboringPoints(s.neighborSector, g.sectors.length, g.sectors[0].length);
+		
+		for(Point p : points){
+			stars.addAll(g.sectors[p.x][p.y]);
+		}
+
+		for(Star ss : stars){
+			System.out.println(ss.star_id);
+		}
+		System.out.println("-------------");
+		stars.remove(s);
+		
+		
+		return stars;
+	}
+	
 	
 }
 

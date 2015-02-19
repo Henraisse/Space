@@ -24,7 +24,8 @@ public class Planet {
 	public double albedo;
 	public double greenhouse;
 	//temperatures
-	public int orbitalPeriod;
+	public int orbitalPeriodDays = 0;
+	public int orbitalPeriodHours = 0;
 	public int coreTemp;
 	public double surfaceTemp;
 	public double dayDeviation;
@@ -170,7 +171,8 @@ public class Planet {
 		
 		planetPos = orbitPositions.get(0).clone();
 		trajectory = orbitTrajectories.get(0).clone();
-		orbitalPeriod = (int) (orbitIterations/Static.ITERATIONS_PER_DAY);
+		orbitalPeriodDays = (int) (orbitIterations/Static.ITERATIONS_PER_DAY);
+		orbitalPeriodHours = orbitIterations;
 		//iterationsPerDay = 14;
 	}
 
@@ -239,27 +241,31 @@ public class Planet {
 
 	}
 		
-	public void setDatePos(double days){
-		while(days < 0){
-			days += orbitalPeriod;
+	public void setDatePos(double hours){
+//		while(days < 0){
+//			days += orbitalPeriod;
+//		}
+		
+		hours %= orbitalPeriodHours;
+		if(hours > 0){
+			planetPos = orbitPositions.get((int)hours).clone();
+			trajectory = orbitTrajectories.get((int)hours).clone();
 		}
-		days %= orbitalPeriod;
-		int its = (int) (days*Static.ITERATIONS_PER_DAY);
+		//int its = (int) (days*Static.ITERATIONS_PER_DAY);
 
 		
-		planetPos = orbitPositions.get(0).clone();
-		trajectory = orbitTrajectories.get(0).clone();
+
 		
-		for(int i = 0; i < its; i++){
-			UpdateTrajectory(1);
-		}
+//		for(int i = 0; i < its; i++){
+//			UpdateTrajectory(1);
+//		}
 		
 	}
 	
 	public void setTrajectory(Random rand, boolean earth){
 		planetPos=new Position(Static.starCenterPos.x + distance, Static.starCenterPos.y);
 		trajectory=new Position(0, Math.sqrt(Static.GRAVITY_CONSTANT *star.mass/(planetPos.x-Static.starCenterPos.x))*Math.sqrt(Static.TIMEFACTOR)); // direction vector
-		//System.out.println(trajectory);
+		//System.out.println("length of initial trajectory: " + trajectory.length());
 		if(!earth){
 			trajectory=trajectory.times(0.95+(0.1*rand.nextDouble()));
 		}
@@ -324,9 +330,9 @@ public class Planet {
 			g.drawString("Distance: " + distance + " M km", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(0*fontSize));
 			g.drawString("Temp: " + (double)((int)((surfaceTemp-273)*10)/10.0) + " C ", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(1*fontSize));				
 			g.drawString("Life: " + Static.yesNo(life), (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(2*fontSize));
-			g.drawString("Orbit: " + orbitalPeriod + " days", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(3*fontSize));
+			//g.drawString("Orbit: " + orbitalPeriod + " days", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(3*fontSize));
 			g.drawString("Orbit: " + orbitIterations + " iterations", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(4*fontSize));
-			g.drawString("Orbit: " + (orbitIterations/orbitalPeriod) + " (iterations/day)", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(5*fontSize));
+			//g.drawString("Orbit: " + (orbitIterations/orbitalPeriod) + " (iterations/day)", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(5*fontSize));
 			g.drawString("Radius: " + (int)(radius) + " km", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(6*fontSize));
 			
 			

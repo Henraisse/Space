@@ -1,10 +1,12 @@
 package Space;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Static.Position;
 import Static.Static;
 
 /**
@@ -68,6 +70,8 @@ public class Galaxy implements Serializable{
 //		for(Star s: stars){
 //			Static.calculateNeighbors(s);
 //		}
+		
+		
 	}
 
 	/**
@@ -195,6 +199,7 @@ public class Galaxy implements Serializable{
 			}
 		}
 		selected_star = closest;
+		closest.neighbors = Static.getNeighbors(closest);
 		
 		for(Star s : selectedStars){
 			s.flagged = false;
@@ -217,13 +222,26 @@ public class Galaxy implements Serializable{
 		int y = (int)(s.y/sector_size);
 		
 		if(x < 0 || y < 0){
-			System.out.println(s.x + " " + s.y);
+			//System.out.println(s.x + " " + s.y);
 		}
 		
-		sectors[x][y].add(s);						
+		sectors[x][y].add(s);		
+		s.neighbors = sectors[x][y];
+		s.neighborSector = new Point(x,y);
+//		if(s.id){}
+		//System.out.println("Star-" + s.star_id + " is added to (" + x + "," + y + ")");
 	}
 	
-	
+	public ArrayList<Star> getSector(Star s){
+		int x = (int)(s.x/sector_size);
+		int y = (int)(s.y/sector_size);
+		
+//		if(x < 0 || y < 0){
+//			System.out.println(s.x + " " + s.y);
+//		}
+		
+		return sectors[x][y];
+	}
 	
 	
 }

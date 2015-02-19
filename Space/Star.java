@@ -37,8 +37,9 @@ public class Star implements Serializable{
 	public Temperature temperature;
 	public Galaxy galax;		//galaxen stjärnan finns i
 	public ArrayList<Star> neighbors = new ArrayList<Star>();
+	public Point neighborSector;
 	
-	boolean flagged;
+	public boolean flagged;
 	boolean flag_for_removal;
 	public double mass;
 
@@ -180,7 +181,7 @@ public class Star implements Serializable{
 		Graphics2D g2 = (Graphics2D) g;
 		
 		Paint p;
-		p= new RadialGradientPaint((float)pos.x, (float)pos.y, (float)radius, fractions, colors);
+		p= new RadialGradientPaint((float)(pos.x), (float)pos.y, (float)radius, fractions, colors);
 
 		g2.setPaint(p);	
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

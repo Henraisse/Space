@@ -15,9 +15,13 @@ import java.awt.RenderingHints;
 
 
 
+
+
 import Space.Galaxy;
 import Space.Star;
+import Static.Game;
 import Static.Static;
+import Tech.SpaceCraft;
 
 /**
  * This class represents the GUI of this program.
@@ -40,12 +44,14 @@ public class GPanel extends JPanel{
 	public ImageIcon image;
 	public ArrayList<Star> stars;
 	public Galaxy galax;
+	public Game game;
 	
 	Menu menu = new Menu(this, 1410,0,1900,1200);
 
 	public boolean active = true;
 	
-	public GPanel(Frame f, Galaxy gax){
+	public GPanel(Frame f, Galaxy gax, Game g){
+		game = g;
 		frame = f;
 		setupMenu();
 		setBackground(Color.BLACK);
@@ -83,6 +89,8 @@ public class GPanel extends JPanel{
 			s.drawStar(g, this);
 		}
 		
+		paintCurrentSpaceCraft(g);
+		
 		//galax.center.paintBlackHole(g, this);
 		
 		if(galax.selected_star != null){
@@ -94,6 +102,17 @@ public class GPanel extends JPanel{
 		}
 		menu.paint(g);
 		drawSpaceRuler(g);
+		
+		
+		
+		
+		if(frame.spanel.currentSpaceCraft != null){
+			g.drawString("ship x: " + (((frame.gax.stars.get(frame.spanel.currentSpaceCraft.star_id).x*Static.lightYearsToMillionKM) + frame.spanel.currentSpaceCraft.object.positionApproximation.get(0).x)-(galax.selected_star.x*Static.lightYearsToMillionKM)), 1500, 700);
+			g.drawString("Star x: " + galax.selected_star.x, 1500, 730);
+			g.drawString("ship y: " + (((frame.gax.stars.get(frame.spanel.currentSpaceCraft.star_id).y*Static.lightYearsToMillionKM) + ((frame.spanel.currentSpaceCraft.object.positionApproximation.get(0).y)))-(galax.selected_star.y*Static.lightYearsToMillionKM)), 1500, 760);
+			g.drawString("Star y: " + galax.selected_star.y, 1500, 790);
+		}
+
 	}
 	
 	
@@ -109,6 +128,11 @@ public class GPanel extends JPanel{
 		//g.drawOval(getLocalX(galax.selected_star.x)-5, getLocalY(galax.selected_star.y)-5, 10, 10);
 		
 		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		
+
+//		for(Star s : galax.selected_star.neighbors){
+//			s.flagged = true;
+//		}
 	}
 	
 
@@ -183,7 +207,11 @@ public class GPanel extends JPanel{
 	}
 	
 	
-	
+	public void paintCurrentSpaceCraft(Graphics g){
+		SpaceCraft sc = frame.spanel.currentSpaceCraft;
+		if(sc == null){return;}
+		sc.object.Paint(g, zoom_scale, zoom_x, zoom_y, this, null);
+	}
 
 	
 	
