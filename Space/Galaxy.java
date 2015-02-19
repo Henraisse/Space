@@ -34,7 +34,7 @@ public class Galaxy implements Serializable{
 	
 	public ArrayList<Star>[][] sectors;
 	ArrayList<Star> selectedStars = new ArrayList<Star>();
-	public int sector_size = 100;
+	public int sector_size = 25;
 	public Random randomGenerator;
 	public BlackHole center;
 	
@@ -46,7 +46,7 @@ public class Galaxy implements Serializable{
 		x = galaxy_center_x;
 		y = galaxy_center_y;
 		
-		sectors = new ArrayList[SPACE_BOUNDS_X/200][SPACE_BOUNDS_Y/200];
+		sectors = new ArrayList[SPACE_BOUNDS_X/sector_size][SPACE_BOUNDS_Y/sector_size];
 		for(int i = 0; i < sectors.length; i++){
 			for(int j = 0; j < sectors[i].length; j++){
 				sectors[i][j] = new ArrayList<Star>();
@@ -224,7 +224,7 @@ public class Galaxy implements Serializable{
 		if(x < 0 || y < 0){
 			//System.out.println(s.x + " " + s.y);
 		}
-		
+		//if(x >= sectors.length || y >= sectors[0].length){return;}
 		sectors[x][y].add(s);		
 		s.neighbors = sectors[x][y];
 		s.neighborSector = new Point(x,y);
@@ -235,11 +235,14 @@ public class Galaxy implements Serializable{
 	public ArrayList<Star> getSector(Star s){
 		int x = (int)(s.x/sector_size);
 		int y = (int)(s.y/sector_size);
-		
-//		if(x < 0 || y < 0){
-//			System.out.println(s.x + " " + s.y);
-//		}
-		
+
+		return sectors[x][y];
+	}
+	
+	public ArrayList<Star> getSector(Position p){
+		int x = (int)(p.x/sector_size);
+		int y = (int)(p.y/sector_size);
+
 		return sectors[x][y];
 	}
 	

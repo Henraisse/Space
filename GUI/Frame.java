@@ -56,7 +56,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	GraphicsDevice[] devices;
 	
 	boolean terminating = false;
-	private double warp = 1.0;
+	double warp = 1.0;
 	public static int ZOOM_SPEED = 30;
 	
 	public Frame(Game g){		
@@ -459,11 +459,11 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			spanel.Update();
 		}
 		
-		else if(arg0.getKeyCode() == KeyEvent.VK_H){
-			spanel.currentSpaceCraft.object.jumpToOrbit();
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.Update();
-		}
+//		else if(arg0.getKeyCode() == KeyEvent.VK_H){
+//			spanel.currentSpaceCraft.object.movePermanent((int)spanel.days);
+//			spanel.days = 0;			
+//			spanel.Update();
+//		}
 		
 		
 		else if(arg0.getKeyCode() == KeyEvent.VK_P){
@@ -474,6 +474,9 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 				warp = 10000;
 			}
 			else if(warp == 10000){
+				warp = 1000000;
+			}
+			else if(warp == 1000000){
 				warp = 1;
 			}
 			

@@ -111,6 +111,9 @@ public class GPanel extends JPanel{
 			g.drawString("Star x: " + galax.selected_star.x, 1500, 730);
 			g.drawString("ship y: " + (((frame.gax.stars.get(frame.spanel.currentSpaceCraft.star_id).y*Static.lightYearsToMillionKM) + ((frame.spanel.currentSpaceCraft.object.positionApproximation.get(0).y)))-(galax.selected_star.y*Static.lightYearsToMillionKM)), 1500, 760);
 			g.drawString("Star y: " + galax.selected_star.y, 1500, 790);
+			g.drawString("Warp: " + frame.warp, 1500, 890);
+			g.drawString("Object closestStar: " + frame.spanel.currentSpaceCraft.object.closestStar.star_id, 1500, 940);
+			//g.drawString("Painted spacecraft at: " + frame.spanel.currentSpaceCraft.object.paintPos, 1200, 970);
 		}
 
 	}

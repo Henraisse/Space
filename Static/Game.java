@@ -33,7 +33,8 @@ public class Game {
 		SpaceCraft enterprise0 = new SpaceCraft("Drone1", test0, null);
 		spacecrafts.add(enterprise0);
 		
-		SpaceCraft enterprise1 = new SpaceCraft("Drone2",test1, new Position(668613000+7389 - 1097650, 904033750+1782-293000));
+		//new Position(668613000+7389 - 1097650, 904033750+1782-293000)
+		SpaceCraft enterprise1 = new SpaceCraft("Drone2",test1, null);
 		spacecrafts.add(enterprise1);
 		
 		SpaceCraft enterprise2 = new SpaceCraft("Drone3",test2, null);

@@ -59,6 +59,20 @@ public class NavComputer {
 					//öka eller sänk hastigheten ytterligare från denna punkt
 					//tills varje punkt på en av banorna ligger inom ett givet intervall till NÅGON punkt på den andra banan
 	}
+
+
+	public void movePermanent(int h) {
+		int counter = 0;
+		int end = 0;
+		for(int i = h; i < boosterInstructions.length; i++){
+			boosterInstructions[counter] = boosterInstructions[i];
+			counter++;
+			end = i;
+		}
+		for(int i = counter+1; i < boosterInstructions.length; i++){
+			boosterInstructions[i] = null;
+		}
+	}
 	
 	
 	
