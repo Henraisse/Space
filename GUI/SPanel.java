@@ -121,18 +121,21 @@ public class SPanel extends JPanel{
 			planets = Static.getStarPlanets(s);
 			//voyager.closestStar = s;
 			//voyager.calculateTrajectoryArc();
-			System.out.println("neighbors: " + s.neighbors.size());
+			//System.out.println("neighbors: " + s.neighbors.size());
 		}	
 		
 		//set the present spacecrafts and determine which to initially focus on
 		presentSpacecrafts.clear();
 		for(int i = 0; i < game.spacecrafts.size(); i++){
 			SpaceCraft sc = game.spacecrafts.get(i);
-			if(sc.star_id == currentStar.star_id){
-				presentSpacecrafts.add(sc);
-				sc.object.closestStar = s;
-				sc.object.calculateTrajectoryArc();
-			}
+			//if(sc.star_id == currentStar.star_id){
+			
+			sc.object.switchStar(s);
+			presentSpacecrafts.add(sc);			
+				//sc.object.closestStar = s;
+			sc.object.calculateTrajectoryArc();
+			
+			//}
 		}
 		if(presentSpacecrafts.size() > 0){
 			currentSpaceCraft = presentSpacecrafts.get(0);

@@ -3,6 +3,7 @@ package Tech;
 import java.util.ArrayList;
 
 import Space.SpaceObject;
+import Space.Star;
 
 public class NavComputer {
 	
@@ -26,15 +27,15 @@ public class NavComputer {
 		return BoostData.idle();
 	}
 	
-	public void setBoost(double days, double percentage, char direction){	
-		
-		BoostData newdata = new BoostData(days*24, percentage, booster, direction);
+	public void setBoost(double days, double percentage, char direction, int targetId){	
+		Star target = object.closestStar.galax.stars.get(targetId);
+		BoostData newdata = new BoostData(days*24, percentage, booster, direction, target);
 		boolean inserted = false;
 		int increment = 0;
 		while(!inserted){
 			if(boosterInstructions[(int) days*24 + increment] == null){
 				boosterInstructions[(int) days*24 + increment] = newdata;
-				System.out.println("New BoostData! - - - [hour:" + (days*24 + increment) + "]");
+				//System.out.println("New BoostData! - - - [hour:" + (days*24 + increment) + "]");
 				inserted = true;
 			}
 			else{

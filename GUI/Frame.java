@@ -394,7 +394,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			
 
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'a');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'w', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -402,7 +402,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		else if(arg0.getKeyCode() == KeyEvent.VK_S){
 			double days0 = spanel.days;
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'b');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'a', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -410,7 +410,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		else if(arg0.getKeyCode() == KeyEvent.VK_A){
 			double days0 = spanel.days;
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'c');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 's', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -418,7 +418,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		else if(arg0.getKeyCode() == KeyEvent.VK_D){
 			double days0 = spanel.days;
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'd');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'd', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -426,7 +426,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		else if(arg0.getKeyCode() == KeyEvent.VK_1){
 			double days0 = spanel.days;
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'e');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'e', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -434,7 +434,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		else if(arg0.getKeyCode() == KeyEvent.VK_2){
 			double days0 = spanel.days;
 			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'f');
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'f', spanel.currentSpaceCraft.object.closestStar.star_id);
 			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 			spanel.days = days0;
 			}
@@ -451,19 +451,15 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 			spanel.days = 1;
 			spanel.Update();
 		}
-		else if(arg0.getKeyCode() == KeyEvent.VK_U){
-			spanel.currentSpaceCraft.object.orbits -= 1.0;
-			System.out.println(spanel.currentSpaceCraft.object.orbits);
-			spanel.Update();
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.Update();
-		}
 		
-//		else if(arg0.getKeyCode() == KeyEvent.VK_H){
-//			spanel.currentSpaceCraft.object.movePermanent((int)spanel.days);
-//			spanel.days = 0;			
-//			spanel.Update();
-//		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_H){
+			double days0 = spanel.days;
+			if(spanel.currentSpaceCraft.object.navComputer != null){
+			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'h', spanel.currentSpaceCraft.object.closestStar.star_id);
+			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
+			spanel.days = days0;
+			}
+		}
 		
 		
 		else if(arg0.getKeyCode() == KeyEvent.VK_P){

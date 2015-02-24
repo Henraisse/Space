@@ -3,6 +3,7 @@ package Tech;
 import Space.Planet;
 import Space.SpaceObject;
 import Space.Star;
+import Static.Game;
 import Static.Position;
 import Static.Static;
 
@@ -17,9 +18,11 @@ public class SpaceCraft {
 	public Booster booster;
 	public NavComputer navComputer;
 
+	public Game game;
 	
 	
-	public SpaceCraft(String n, Site constructionSite, Position offSet){
+	public SpaceCraft(String n, Site constructionSite, Position offSet, Game g){
+		game = g;
 		name = n;
 		//System.out.println("Spacecraft " + name + " online.");
 		Position[] starOffsetPosition = determinePosition(constructionSite);
@@ -34,7 +37,7 @@ public class SpaceCraft {
 		else{
 			object = new SpaceObject(0, offSet, starOffsetPosition[1], navComputer, booster, this);				
 		}
-		
+		object.closestStar = game.currGalaxy.stars.get(constructionSite.star_id);
 		
 		
 	}

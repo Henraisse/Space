@@ -20,7 +20,7 @@ public class Game {
 	public Game(){}
 	
 	public void setTest(Galaxy g){
-		
+		currGalaxy = g;
 		
 		
 		Site test0 = new Site(g, 42571, 0);
@@ -30,18 +30,18 @@ public class Game {
 		knownSites.add(test1);
 		knownSites.add(test2);
 		
-		SpaceCraft enterprise0 = new SpaceCraft("Drone1", test0, null);
-		spacecrafts.add(enterprise0);
+		//SpaceCraft enterprise0 = new SpaceCraft("Drone1", test0, null, this);
+		//spacecrafts.add(enterprise0);
 		
 		//new Position(668613000+7389 - 1097650, 904033750+1782-293000)
-		SpaceCraft enterprise1 = new SpaceCraft("Drone2",test1, null);
+		SpaceCraft enterprise1 = new SpaceCraft("Drone2",test1, null, this);
 		spacecrafts.add(enterprise1);
 		
-		SpaceCraft enterprise2 = new SpaceCraft("Drone3",test2, null);
-		spacecrafts.add(enterprise2);
+		//SpaceCraft enterprise2 = new SpaceCraft("Drone3",test2, null, this);
+		//spacecrafts.add(enterprise2);
 		
-		SpaceCraft enterprise3 = new SpaceCraft("Drone4",test1, null);
-		spacecrafts.add(enterprise3);
+		//SpaceCraft enterprise3 = new SpaceCraft("Drone4",test1, null, this);
+		//spacecrafts.add(enterprise3);
 	}
 	
 }

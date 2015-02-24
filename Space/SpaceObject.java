@@ -78,11 +78,9 @@ public class SpaceObject {
 
 		
 		for(Star s : objPoss){			
-			//if(currentPos.minus(p).length() < 5000){	
-				
+			if(distanceToStar(currentPos, s) < 10000){					
 				Position p = new Position(s.x, s.y).minus(new Position(closestStar.x, closestStar.y)).plus(Static.starCenterPos.times(1.0/Static.lightYearsToMillionKM)).times(Static.lightYearsToMillionKM);
-				
-				
+								
 				double distance=currentPos.distance(p);								//vi r�knar ut avst�ndet till stj�rnan						
 				double acc=(Static.GRAVITY_CONSTANT*s.mass)/(distance*distance);				//vi r�knar ut accelerationen till objektet
 				Position delta=p.minus(currentPos);
@@ -90,10 +88,18 @@ public class SpaceObject {
 				Position direction = new Position(acc*Math.cos(theta), acc*Math.sin(theta));
 				Position gravityVector = direction.times(Static.TIMEFACTOR*speed);
 				currentTraj.add(gravityVector);
-			//}
+			}
+		}
+		Position boost = getBoosterAdding(approxIndex, currentPos, Static.starCenterPos, currentTraj);
+		
+		if(boost.x == -666 && boost.y == -666){
+			currentTraj = new Position(0,0);
+		}
+		else{
+			currentTraj.add(boost);
 		}
 		
-		currentTraj.add(getBoosterAdding(approxIndex, currentPos, Static.starCenterPos));
+		
 		positionApproximation.add(currentPos.plus(currentTraj.times(speed)));
 		trajectoryApproximation.add(currentTraj);
 	}
@@ -101,14 +107,40 @@ public class SpaceObject {
 
 
 	
-	private Position getBoosterAdding(int approxIndex, Position currPos, Position objPos) {
+	private Position getBoosterAdding(int approxIndex, Position currPos, Position objPos, Position currentTraj) {
 		Position boostAdd = new Position(0,0);
 		
 		approxIndex = (approxIndex+insertDay*24);
-			boostAdd = booster.getBoost(approxIndex, currPos, objPos, trajectoryApproximation.get(approxIndex));
+			boostAdd = booster.getBoost(approxIndex, currPos, currentTraj);
 		return boostAdd;
 	}
 
+	
+	public double distanceToStar(Position currPos, Star s){
+		Position starPos = new Position(s.x, s.y).times(Static.lightYearsToMillionKM);
+		
+		Position p = currPos.minus(Static.starCenterPos);		
+		p.add(new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM));
+		
+		double distance = p.minus(starPos).length();
+		return distance;
+	}
+	
+	
+	
+	public void switchStar(Star s){
+		Position currentOffset = currentPosition.minus(Static.starCenterPos);
+		Position oldStarPos = new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM);
+		Position newStarPos = new Position(s.x, s.y).times(Static.lightYearsToMillionKM);
+						
+		Position newOffset = currentOffset.plus(oldStarPos).minus(newStarPos).plus(Static.starCenterPos);
+		
+		//System.out.println("offset distance " + newOffset.length() + " distance to star-" + s.star_id);
+		
+		currentPosition = newOffset;
+		closestStar = s;
+		spacecraft.star_id = s.star_id;
+	}
 	
 	
 	public Position getGalacticPosition(Position p){
@@ -123,6 +155,8 @@ public class SpaceObject {
 		ArrayList<Star> currentSector = g.getSector(getGalacticPosition(p));
 		return currentSector;
 	}
+	
+	
 	
 	
 	
@@ -152,7 +186,7 @@ public class SpaceObject {
 		for(int i = 0; i < navComputer.memory; i++){
 			
 			if(i%100 == 0){
-				vicinityStars = getStarSector(positionApproximation.get(i));
+				vicinityStars = getStarSector(positionApproximation.get(i));			
 			}
 			boolean print = false;
 			if(i == navComputer.memory-1){print = true;}
@@ -168,36 +202,30 @@ public class SpaceObject {
 		
 	}
 	
-	public void Paint(Graphics g, double zoom, double zoom_x, double zoom_y, GPanel gp, SPanel sp){
-		Position pp = starSpacePosition;
-		//Position p = new Position((pp.x-Static.starCenterPos.x)*zoom, (pp.y-Static.starCenterPos.y)*zoom);
-		Position p = starSpacePosition.minus(Static.starCenterPos).times(zoom);
+	public void Paint(Graphics g, double zoom, double zoom_x, double zoom_y, GPanel gp, SPanel sp){		
+		double starScale = 1.0;
 		g.setColor(Color.red);
-		Position starPos = new Position(0,0);
-		Double starScale = 1.0;
+		Position starPos = Static.starCenterPos;	
+		
 		if(gp != null){
-	
-			//calculate the total position
-			//double posX = ((closestStar.x+zoom_x)*zoom);
-			//double posY = ((closestStar.y+zoom_y)*zoom);
-												
-
-			starPos = new Position(((closestStar.x+zoom_x)*zoom), ((closestStar.y+zoom_y)*zoom));
-			
-			
-			starScale = 1.0/(Static.lightYearsToMillionKM);
-			p = p.times(starScale);
+			starScale = (1.0/(Static.lightYearsToMillionKM));
+			starPos = new Position(((closestStar.x+zoom_x)*zoom), ((closestStar.y+zoom_y)*zoom));						
+			Position p = starSpacePosition.minus(Static.starCenterPos).times(zoom*starScale);
+			g.fillOval((int)(((closestStar.x+zoom_x)*zoom)+p.x-5), (int)(((closestStar.y+zoom_y)*zoom)+p.y-5), (int)(2*5), (int)(2*5));
 			
 		}
-		else if(sp != null){
-				starPos = Static.starCenterPos;
+		else if(sp != null){					
+			Position paintPos = starSpacePosition.minus(Static.starCenterPos).times(zoom).plus(Static.starCenterPos);			
+			g.fillOval((int)( paintPos.x-5), (int)( paintPos.y-5), (int)(2*5), (int)(2*5));								
 		}
-
-		g.fillOval((int)(((closestStar.x+zoom_x)*zoom)+p.x-5), (int)(((closestStar.y+zoom_y)*zoom)+p.y-5), (int)(2*5), (int)(2*5));
 
 		
 
 		
+
+		if(positionApproximation.size() == 0){
+			calculateTrajectoryArc();
+		}
 		if(true){
 			//first calculate number of prints
 			int counter = 0;
@@ -223,17 +251,17 @@ public class SpaceObject {
 
 			}
 		}
-		
-//		g.setColor(Color.gray);
-//		for(Position p: positionApproximation){
-//			g.drawLine((int)p.x, (int)p.y, (int)p.x, (int)p.y);
-//		}
+
 		
 		if(starSpacePosition.x < 0){
 			g.drawString("X IS: " + starSpacePosition.x, (int)(Static.starCenterPos.x)+100, (int)(Static.starCenterPos.y+400));
 			
 		}
 	}
+	
+	
+	
+	
 	
 	public void setDatePos(double hours){
 		hours -= insertDay*24;

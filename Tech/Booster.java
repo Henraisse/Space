@@ -18,12 +18,17 @@ public class Booster {
 		navComputer = nc;
 	}
 	
-	public Position getBoost(int approxIndex, Position objPos, Position sourcePos, Position trajectory){
+	public Position getBoost(int approxIndex, Position objPos, Position trajectory){
 		if(object != null){
-		
+		Position direction = new Position(0,0);
 		BoostData bd = object.navComputer.getBoost(approxIndex);
 			if(bd != null){
-				Position direction = getVector(bd.direction, objPos, sourcePos, trajectory);
+				
+				direction = getVector(bd.direction, objPos, bd.starPos, trajectory);
+				
+				if(direction.x == -666 || direction.y == -666){
+					return direction;
+				}
 				
 				return direction.times(bd.boostPercentage*maxPower*warp);
 			}
@@ -36,22 +41,26 @@ public class Booster {
 	
 	public Position getVector(char c, Position objPos, Position sourcePos, Position trajectory){
 		Position solarOffset = sourcePos.minus(objPos);
-		if(c == 'a'){			
+		if(c == 'w'){			
 			return solarOffset.times(-1).normalize();
+			//return new Position(-trajectory.y, trajectory.x).normalize();
 		}
 		
-		if(c == 'b'){
+		if(c == 'a'){
 			return solarOffset.normalize();
+			//return new Position(trajectory.y, -trajectory.x).normalize();
 		}
 		
-		if(c == 'c'){
+		if(c == 's'){
 			Position newPos = new Position(-solarOffset.y, solarOffset.x).normalize();
 			return newPos;
+			//return trajectory.normalize();
 		}
 		
 		if(c == 'd'){
 			Position newPos = new Position(solarOffset.y, -solarOffset.x).normalize();
 			return newPos;
+			//return trajectory.times(-1).normalize();
 		}
 		
 		if(c == 'e'){
@@ -63,6 +72,12 @@ public class Booster {
 			Position newPos = trajectory.times(-1).normalize();
 			return newPos;
 		}
+		
+		if(c == 'h'){
+			Position newPos = new Position(-666, -666);
+			return newPos;
+		}
+		
 		return new Position(0, 0);
 	}
 

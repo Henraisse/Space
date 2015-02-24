@@ -88,7 +88,6 @@ public class Static {
 	public static Temperature M2 = new Temperature(3600, new Color(255, 190, 127));
 	public static Temperature M4 = new Temperature(3400, new Color(255, 187, 123));
 	public static Temperature M8 = new Temperature(2700, new Color(253, 156, 137));
-	
 
 	
 	public static String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -498,9 +497,9 @@ public class Static {
 		}
 
 		for(Star ss : stars){
-			System.out.println(ss.star_id);
+			//System.out.println(ss.star_id);
 		}
-		System.out.println("-------------");
+		//System.out.println("-------------");
 		stars.remove(s);
 		
 		
