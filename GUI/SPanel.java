@@ -54,26 +54,33 @@ public class SPanel extends JPanel{
 	public SPanel(Frame f, Galaxy g, Game ga) {		
 		game = ga;
 		frame = f;
-		galaxy = g;
-		
-		sun = g.sun;
-		
-		//atlas5 = new Booster(mother);
-		//mother = new NavComputer(atlas5);
-		
-		//if(atlas5 == null){System.out.println("atlas5 is null");}
-		//else if(atlas5.object == null){System.out.println("atlas5.object is null");}
-		//voyager = new SpaceObject(0, new Position(0, -150), new Position(0.10677325182624835, 0), sun, mother, atlas5);
-		
-		
+		galaxy = g;		
+		//sun = g.sun;
 		super.setBackground(Color.black);
-		//(Menu m, int x0, int y0, int length, int height, String text, Font f1){
-		MenuButton b0 = new MenuButton(menu, 170, 300, 200, 50, Static.DISPLAY_ORBITS_BUTTON_TEXT, Static.ruler_font12);
-		menu.buttons.add(b0);
-		MenuButton b1 = new MenuButton(menu, 170, 355, 200, 50, Static.DISPLAY_DESCRIPTION_TEXT, Static.ruler_font12);
-		menu.buttons.add(b1);
-		MenuButton b2 = new MenuButton(menu, 170, 410, 200, 50, Static.MANUAL_ORBIT_SWITCH_TEXT, Static.ruler_font12);
-		menu.buttons.add(b2);
+		MenuButton a0 = new MenuButton(0, menu, 170, 300, Static.DISPLAY_ORBITS_BUTTON_TEXT, Static.ruler_font12, "button");
+		MenuButton a1 = new MenuButton(1, menu, 170, 355, Static.DISPLAY_DESCRIPTION_TEXT, Static.ruler_font12, "button");
+		MenuButton a2 = new MenuButton(2, menu, 170, 410,  Static.MANUAL_ORBIT_SWITCH_TEXT, Static.ruler_font12, "button");		
+		
+		
+		MenuButton a3 = new MenuButton(3, menu, 85-60, 940+60,  "", Static.ruler_font12, "left");
+		MenuButton a4 = new MenuButton(4, menu, 85+60, 940+60,  "", Static.ruler_font12, "right");
+		MenuButton a5 = new MenuButton(5, menu, 85, 940,  "", Static.ruler_font12, "up");
+		MenuButton a6 = new MenuButton(7, menu, 85, 940+60*1,  "", Static.ruler_font12, "down");
+		
+		MenuButton a7 = new MenuButton(8, menu, 85+(60*3), 940+60*1,  "", Static.ruler_font12, "resettime");
+		MenuButton a8 = new MenuButton(9, menu, 85+(60*4), 940+60*1,  "", Static.ruler_font12, "reference");
+		MenuButton a9 = new MenuButton(10, menu, 85+(60*5), 940+60*1,  "", Static.ruler_font12, "resetorbit");
+//		menu.buttons.add(a0);		
+//		menu.buttons.add(a1);		
+//		menu.buttons.add(a2);
+//		menu.buttons.add(a3);
+//		menu.buttons.add(a4);
+//		menu.buttons.add(a5);
+//		menu.buttons.add(a6);
+//		menu.buttons.add(a7);
+		
+		MenuButton b0 = new MenuButton(3, menu, 170, 610,  "", Static.ruler_font12, "squareButton");
+//		menu.buttons.add(b0);
 	}
 
 	public void paintComponent(Graphics g)

@@ -36,7 +36,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	static final double ZOOM_SCALE_MIN_SP = 0.1;
 	Galaxy gax;
 	Game game;
-	double momentum = 0;
+	public double momentum = 0;
 	
 	boolean mouseIsDown = false;
 	
@@ -46,8 +46,8 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	double mouseScrollX = 0;
 	double mouseScrollY = 0;
 	
-	GPanel gpanel;
-	SPanel spanel;
+	public GPanel gpanel;
+	public SPanel spanel;
 	
     public GraphicsDevice device;
     public DisplayMode originalDM;
@@ -56,6 +56,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	GraphicsDevice[] devices;
 	
 	boolean terminating = false;
+	public boolean spacecraftSunRef = true;
 	double warp = 1.0;
 	public static int ZOOM_SPEED = 30;
 	
@@ -64,9 +65,10 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		
 		
 		gax = new Galaxy(150000, 6900, 5200, 4000, 1000);	
-		
+
 		game = g;
 		game.setTest(gax);
+		game.frame = this;
 		
 		setUpWindow();
 		while(!terminating){	
@@ -346,7 +348,50 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 
 
 
+	public void setBoostInstruction(char c){
+		double days0 = spanel.days;			
+		if(spanel.currentSpaceCraft.object.navComputer != null){
+		spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, c, spanel.currentSpaceCraft.object.closestStar.star_id, spanel.currentSpaceCraft.object.closestStar, spacecraftSunRef);
+		spanel.currentSpaceCraft.object.calculateTrajectoryArc();
+		spanel.days = days0;
+		}
+		setButtonState(c, true);
+		
+	}
 
+	
+	
+	public void setButtonState(char c, boolean b){
+		//System.out.println(c);
+		int i = -1;
+		if(c == 'a'){i = 3;}
+		if(c == 'd'){i = 4;}
+		if(c == 'w'){i = 5;}
+		if(c == 's'){i = 7;}
+		if(c == 't'){i = 8;}
+		if(c == 'c'){i = 10;}
+		for(MenuButton m : spanel.menu.buttons){
+			if(m.id == i){
+				m.isDown = b;
+				return;
+			}
+		}
+		if(c == 'r'){i = 9;}
+		for(MenuButton m : spanel.menu.buttons){
+			if(m.id == i){
+				m.isDown = !m.isDown;
+			}
+		}
+	}
+	
+
+	
+	public void keyTyped(KeyEvent arg0) {
+
+	}
+	
+	
+	
 	public void keyPressed(KeyEvent arg0) {
 		if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if(spanel.active){
@@ -390,77 +435,42 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		}
 		
 		else if(arg0.getKeyCode() == KeyEvent.VK_W){
-			double days0 = spanel.days;
-			
-
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'w', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('w');
 		}
 		else if(arg0.getKeyCode() == KeyEvent.VK_S){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 'a', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('s');
 		}
 		else if(arg0.getKeyCode() == KeyEvent.VK_A){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp, 's', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('a');
 		}
 		else if(arg0.getKeyCode() == KeyEvent.VK_D){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'd', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
-		}
+			setBoostInstruction('d');
+		}		
 		else if(arg0.getKeyCode() == KeyEvent.VK_1){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'e', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('1');
 		}
 		else if(arg0.getKeyCode() == KeyEvent.VK_2){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'f', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('2');
 		}
-		else if(spanel.active && arg0.getKeyCode() == KeyEvent.VK_C){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.resetNavInstructions();
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+		
+		
+		else if(arg0.getKeyCode() == KeyEvent.VK_C){
+			resetOrbitPlanning();
+			setButtonState('c', true);
 		}
-		else if(spanel.active && arg0.getKeyCode() == KeyEvent.VK_T){
-			spanel.days = 1;
-			spanel.Update();
+		else if(arg0.getKeyCode() == KeyEvent.VK_T){
+			resetPlanningTime();
 		}
 		
 		else if(arg0.getKeyCode() == KeyEvent.VK_H){
-			double days0 = spanel.days;
-			if(spanel.currentSpaceCraft.object.navComputer != null){
-			spanel.currentSpaceCraft.object.navComputer.setBoost(spanel.days, warp , 'h', spanel.currentSpaceCraft.object.closestStar.star_id);
-			spanel.currentSpaceCraft.object.calculateTrajectoryArc();
-			spanel.days = days0;
-			}
+			setBoostInstruction('h');
 		}
+
 		
+		else if(arg0.getKeyCode() == KeyEvent.VK_R){
+			spacecraftSunRef = !spacecraftSunRef;
+			setButtonState('r', true);
+		}
 		
 		else if(arg0.getKeyCode() == KeyEvent.VK_P){
 			if(warp == 1){
@@ -500,24 +510,72 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 				spanel.currentSpaceCraft = spanel.presentSpacecrafts.get(0);
 			}
 			//System.out.println(spanel.currentSpaceCraft.name + " Drone name.");
-		}
-
-		
+		}		
 	}
 
 
 
+	public void resetOrbitPlanning(){
+		setButtonState('c', true);
+		double days0 = spanel.days;
+		if(spanel.currentSpaceCraft.object.navComputer != null){
+		spanel.currentSpaceCraft.object.navComputer.resetNavInstructions();
+		spanel.currentSpaceCraft.object.calculateTrajectoryArc();
+		spanel.days = days0;
+		}
+	}
+
+
+
+	public void resetPlanningTime(){
+		setButtonState('t', true);
+		spanel.days = 1;
+		spanel.Update();
+	}
+	
+	
 
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+		if(arg0.getKeyCode() == KeyEvent.VK_UP){
+			setButtonState('z', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_DOWN){
+			setButtonState('v', false);
+		}	
+		else if(arg0.getKeyCode() == KeyEvent.VK_W){
+			setButtonState('w', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_S){
+			setButtonState('s', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_A){
+			setButtonState('a', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_D){
+			setButtonState('d', false);
+		}		
+		else if(arg0.getKeyCode() == KeyEvent.VK_1){
+			setButtonState('1', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_2){
+			setButtonState('2', false);
+		}		
+		else if(arg0.getKeyCode() == KeyEvent.VK_C){
+			setButtonState('c', false);
+		}
+		else if(arg0.getKeyCode() == KeyEvent.VK_T){
+			setButtonState('t', false);
+		}		
+		else if(arg0.getKeyCode() == KeyEvent.VK_H){
+			setButtonState('h', false);
+		}				
+		else if(arg0.getKeyCode() == KeyEvent.VK_P){
+			setButtonState('p', false);
+		}
 		
 	}
 
 
 
-
-	public void keyTyped(KeyEvent arg0) {
-     		
-	}
 	
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import Space.SpaceObject;
 import Space.Star;
+import Static.Position;
+import Static.Static;
 
 public class NavComputer {
 	
@@ -27,21 +29,25 @@ public class NavComputer {
 		return BoostData.idle();
 	}
 	
-	public void setBoost(double days, double percentage, char direction, int targetId){	
-		Star target = object.closestStar.galax.stars.get(targetId);
-		BoostData newdata = new BoostData(days*24, percentage, booster, direction, target);
+	public void setBoost(double days, double percentage, char direction, int targetId, Star star, boolean ref){	
+
 		boolean inserted = false;
 		int increment = 0;
-		while(!inserted){
-			if(boosterInstructions[(int) days*24 + increment] == null){
-				boosterInstructions[(int) days*24 + increment] = newdata;
-				//System.out.println("New BoostData! - - - [hour:" + (days*24 + increment) + "]");
-				inserted = true;
+		if(star != null){
+			Position target = new Position(star.x, star.y).times(Static.lightYearsToMillionKM);
+			BoostData newdata = new BoostData(days*24, percentage, booster, direction, target, ref);
+			while(!inserted){
+				if(boosterInstructions[(int) days*24 + increment] == null){
+					boosterInstructions[(int) days*24 + increment] = newdata;
+					//System.out.println("New BoostData! - - - [hour:" + (days*24 + increment) + "]");
+					inserted = true;
+				}
+				else{
+					increment++;
+				}			
 			}
-			else{
-				increment++;
-			}			
-		}		
+		}
+		
 	}
 	
 	public void resetNavInstructions(){

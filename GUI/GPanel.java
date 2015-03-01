@@ -67,9 +67,9 @@ public class GPanel extends JPanel{
 
 
 	public void setupMenu(){
-		menu.addButton(20, 142, 132, 50, Static.SELECT_BUTTON_TEXT, Static.ruler_font18);
-		menu.addButton(20, 197, 132, 50, Static.NAME_BUTTON_TEXT, Static.ruler_font18);
-		menu.addButton(20, 252, 132, 50, Static.EXAMINE_BUTTON_TEXT, Static.ruler_font18);
+		menu.addButton(4, 20, 142, 132, 50, Static.SELECT_BUTTON_TEXT, Static.ruler_font18, "button");
+		menu.addButton(5, 20, 197, 132, 50, Static.NAME_BUTTON_TEXT, Static.ruler_font18, "button");
+		menu.addButton(6, 20, 252, 132, 50, Static.EXAMINE_BUTTON_TEXT, Static.ruler_font18, "button");
 		menu.addDisplay();
 		menu.addLabel(Static.STAR_SPECS_LABEL);
 	}

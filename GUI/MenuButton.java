@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 
@@ -17,46 +18,48 @@ public class MenuButton {
 	public Image menuImg;
 	public Menu menu;
 	
+	int id;
 	public Font f1;
+	public int x;
+	public int y;
+	public int length;
+	public int height;
+	public String text;
 	
-	int x;
-	int y;
-	int length;
-	int height;
-	String text;
+	public boolean isSwitch = false;
+	public boolean clicked = false;
+	public boolean isDown = false;
+	public boolean f = false;
 	
-	boolean isSwitch = false;
-	boolean clicked = false;
-	boolean isDown = false;
-	boolean f = false;
-	
-	public MenuButton(Menu m, int x0, int y0, int length, int height, String text, Font f1){
+	public MenuButton(int i, Menu m, int x0, int y0, String text, Font f1, String type){
+		id = i;
 		this.text = text;
 		this.f1 = f1;
 		menu = m;
 		this.x = m.x0 + x0;
 		this.y = m.y0 + y0;
-		this.length = length;
-		this.height = height;
-		image1 = new ImageIcon("button01.png");
-		image2 = new ImageIcon("button02.png");
+
+		setType(type);
+		menu.buttons.add(this);
+	}
+	
+	
+	public void setType(String type){		
+		image1 = new ImageIcon(type + "0.png");
+		image2 = new ImageIcon(type + "1.png");
+		length = image1.getIconWidth();
+		height = image1.getIconHeight();
 		menuImg = image1.getImage();
 	}
 	
+	
 	public boolean clickedAt(double xi, double yi){
-
 		if((x < xi && xi < (x+length) )&&( y < yi && yi < (y+height))){
-			setDown();
-			//clicked = true;
-			//isDown = true;
-			//action();
-			//System.out.println(text);
-			//menuImg = image2.getImage();
-			//f = true;
+			isDown = true;
 			return true;
 		}
 		else{
-			setUp();
+			isDown = false;
 			return false;
 		}
 	}
@@ -68,51 +71,53 @@ public class MenuButton {
 				clicked = true;
 				action();
 			}
-			setUp();
-			//action();
-			//System.out.println(text);
-			//menuImg = image2.getImage();
-			//f = true;
+			isDown = false;
 			return true;
 		}
-		setUp();
+		isDown = false;
 		return false;
 	}
 	
-	
-	public void setDown(){
-		isDown = true;
-		menuImg = image2.getImage();
-		
-	}
-	
-	public void setUp(){
-		
-		menuImg = image1.getImage();
-		isDown = false;		
-	}
+//	
+//	public void setDown(){
+//		isDown = true;
+//		menuImg = image2.getImage();
+//		
+//	}
+//	
+//	public void setUp(){
+//		
+//		menuImg = image1.getImage();
+//		isDown = false;		
+//	}
 	
 	
 	public void paint(Graphics g){
-		g.setFont(f1);
-				
+		g.setFont(f1);				
 		if(isDown || isSwitch){
 			g.setColor(Color.red);
-			g.drawImage(image2.getImage(),x,y,132,50, null);
+			g.drawImage(image2.getImage(),x,y,length,height, null);
 		}
 		else{
 			g.setColor(Color.black);
-			g.drawImage(image1.getImage(),x,y,132,50, null);
-		}
-
-
-		
+			g.drawImage(image1.getImage(),x,y,length,height, null);
+		}		
 		g.drawString(text, x+10, y+height-(25-f1.getSize()/2));
 	}
 	
+	
+	
 	public void action(){
-		if(text.equals(Static.EXAMINE_BUTTON_TEXT)){
-			Frame frame = menu.gpanel.frame;			
+		Frame frame = null;
+		if(menu.gpanel != null){
+			frame = menu.gpanel.frame;
+		}
+		if(menu.spanel != null){
+			frame = menu.spanel.frame;
+		}
+		
+		if(id == 6){
+						
 			frame.remove(frame.gpanel);
 			frame.add(frame.spanel);
 			frame.spanel.active = true;
@@ -122,17 +127,44 @@ public class MenuButton {
 			frame.spanel.setStar(s);
 			frame.momentum = 0;
 		}
-		if(text.equals(Static.DISPLAY_ORBITS_BUTTON_TEXT)){
+		else if(id == 0){
 			menu.spanel.display_orbits = !menu.spanel.display_orbits;
 		}
-		if(text.equals(Static.DISPLAY_DESCRIPTION_TEXT)){
+		else if(id == 1){
 			menu.spanel.display_descriptions = !menu.spanel.display_descriptions;
 		}
-		if(text.equals(Static.MANUAL_ORBIT_SWITCH_TEXT)){
+		else if(id == 2){
 			isSwitch = !isSwitch;
 			menu.spanel.manual_orbits = !menu.spanel.manual_orbits;
 		}
+		
+		else if(id == 3){
+			frame.setBoostInstruction('a');
+		}
+		else if(id == 4){
+			frame.setBoostInstruction('d');
+		}
+		else if(id == 5){			
+			frame.setBoostInstruction('w');
+		}
+		else if(id == 7){
+			frame.setBoostInstruction('s');
+		}
+		else if(id == 8){
+			frame.resetPlanningTime();
+		}
+		else if(id == 9){
+			frame.spacecraftSunRef = !frame.spacecraftSunRef;
+			isSwitch = !isSwitch;
+		}
+		else if(id == 10){
+			frame.resetOrbitPlanning();
+		}
 	}
+	
+
+		
+	
 	
 }
 

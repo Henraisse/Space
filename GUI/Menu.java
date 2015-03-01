@@ -62,8 +62,8 @@ public class Menu {
 		//set up buttons
 	}
 	
-	public void addButton(int x, int y, int length, int height, String text, Font font){
-		MenuButton b1 = new MenuButton(this, x, y, length, height, text, font);
+	public void addButton(int i, int x, int y, int length, int height, String text, Font font, String type){
+		MenuButton b1 = new MenuButton(i, this, x, y, text, font, type);
 		buttons.add(b1);
 	}
 	

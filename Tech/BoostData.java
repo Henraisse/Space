@@ -11,12 +11,11 @@ public class BoostData {
 		public char direction = 0;
 		
 		public Booster booster;
+		public boolean reference;
 		
-		public BoostData(double hour2, double p, Booster b, char d, Star s){
-			if(s != null){
-				starPos = new Position(s.x, s.y).clone();
-			}
-			
+		public BoostData(double hour2, double p, Booster b, char d, Position pos, boolean ref){
+			reference = ref;
+			starPos = pos;			
 			direction = d;
 			hour = hour2;
 			boostPercentage = p;
@@ -26,6 +25,6 @@ public class BoostData {
 
 		public static BoostData idle() {
 			// return an idle, non-moving data
-			return new BoostData(-1, 0.0, null, 'a', null);
+			return new BoostData(-1, 0.0, null, 'a', null, false);
 		}
 }

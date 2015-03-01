@@ -1,6 +1,7 @@
 package Static;
 import java.util.ArrayList;
 
+import GUI.Frame;
 import Space.Galaxy;
 import Tech.Site;
 import Tech.SpaceCraft;
@@ -14,6 +15,7 @@ public class Game {
 	public ArrayList<SpaceCraft> spacecrafts = new ArrayList<SpaceCraft>();
 	public SpaceCraft currentSpacecraft;
 	public Galaxy currGalaxy;
+	public Frame frame;
 	
 	
 	

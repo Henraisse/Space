@@ -90,7 +90,8 @@ public class SpaceObject {
 				currentTraj.add(gravityVector);
 			}
 		}
-		Position boost = getBoosterAdding(approxIndex, currentPos, Static.starCenterPos, currentTraj);
+
+		Position boost = getBoosterAdding(approxIndex, currentPos.minus(Static.starCenterPos).plus(new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM)), currentTraj);
 		
 		if(boost.x == -666 && boost.y == -666){
 			currentTraj = new Position(0,0);
@@ -107,7 +108,7 @@ public class SpaceObject {
 
 
 	
-	private Position getBoosterAdding(int approxIndex, Position currPos, Position objPos, Position currentTraj) {
+	private Position getBoosterAdding(int approxIndex, Position currPos, Position currentTraj) {
 		Position boostAdd = new Position(0,0);
 		
 		approxIndex = (approxIndex+insertDay*24);
