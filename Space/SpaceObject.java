@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import GUI.GPanel;
 import GUI.SPanel;
+import Static.BigPosition;
 import Static.Physics;
 import Static.Position;
 import Static.Static;
@@ -15,30 +16,33 @@ import Tech.SpaceCraft;
 
 public class SpaceObject {
 	
-	int insertDay;
+	public int launchDay;
+	public double orbits = 0;
 	
-	public Star closestStar;
-	
+	public Star closestStar;	
 	public SpaceCraft spacecraft;
 	public NavComputer navComputer;
-	Booster booster;
-	Position currentPosition;
-	Position currentTrajectory;
-	
-	
-	
+	public Booster booster;
+
+	public Position currentGalaxyPosition;	
+	public Position currentTrajectory;	
 	public Position starSpacePosition;
+	public Position trajectory;
 	
-	
-	Position trajectory;
-	public ArrayList<Integer> boosters = new ArrayList<Integer>();
-	
+	public ArrayList<Integer> boosters = new ArrayList<Integer>();	
 	public ArrayList<Position> trajectoryApproximation = new ArrayList<Position>();
 	public ArrayList<Position> positionApproximation = new ArrayList<Position>();
 
-	public double orbits = 0;
-	
-	//public SpaceObject(int day, Position p, Position t, Star s, NavComputer nc, Booster b){
+		
+	/**
+	 * Creates a spaceObject. This object corresponds to spacecrafts and other spacefaring objects with a trajectory.
+	 * @param day (Integer) - The day from day 0 that this spaceCraft launches/launched.
+	 * @param p (Position) - The initial position in space (distance unit is in Light Years)
+	 * @param t (position) - The initial trajectory (the amount of distance to traverse in each iteration)
+	 * @param nc (NavComputer) - The spaceObjects navigational computer
+	 * @param b (Booster) - the spaceObjects boosters
+	 * @param sc (SpaceCraft) - the spaceObjects spaceCraft object.
+	 */
 	public SpaceObject(int day, Position p, Position t, NavComputer nc, Booster b, SpaceCraft sc){
 		spacecraft = sc;
 		booster = b;
@@ -46,178 +50,143 @@ public class SpaceObject {
 		booster.object = this;		
 		navComputer.object = this;
 		
-		
-		//System.out.println("navcomputer set. " + navComputer.name + ", now SpaceObject have a navcomputer who isn't null.");
-		//closestStar = s;
-		insertDay = day;
+		launchDay = day;
 		starSpacePosition = p.clone();
-		currentPosition = p.clone();
+		currentGalaxyPosition = p.clone();
 		
-		//trajectory = new Position(0, 0.18338908242143742);
 		trajectory = t;
-		currentTrajectory = trajectory.clone();
-		
+		currentTrajectory = trajectory.clone();		
 	}
 	
 	/**
-	 * Adds a momentary acceleration to the trajectory. For example to burn engines for awhile, use this
+	 * Adds momentum to the trajectory. For example to burn engines for awhile, use this
 	 * method for some iterations.
-	 * @param p
+	 * @param p (Position) - the momentum vector to add to the spaceObjects trajectory
 	 */
 	public void alterTrajectory(Position p){
 		trajectory.add(p);
 	}
 	
-	
-
-	
-	public void gravity(double speed, ArrayList<Star> objPoss, double mass, int approxIndex, boolean print)
+	/**
+	 * Calculates one step of the gravitational pull in a certain moment. The forces that apply here corresponds to one hour.
+	 * @param closeStars (ArrayList<Star>) - the list of close Stars
+	 * @param approxIndex (int) - time from "now" this iteration will occur (in hours)
+	 */
+	public void gravity(ArrayList<Star> closeStars, int approxIndex)
 	{
-		Position currentPos = positionApproximation.get(approxIndex).clone();		//vi l�ser av var vi st�r just nu
-		Position currentTraj = trajectoryApproximation.get(approxIndex).clone();	//vi l�ser av vilken riktning vi �ker i just nu
-
+		Position currentPos = positionApproximation.get(approxIndex).clone();		
+		Position currentTraj = trajectoryApproximation.get(approxIndex).clone();	
 		
-		for(Star s : objPoss){			
-			if(distanceToStar(currentPos, s) < 10000){					
-				Position p = new Position(s.x, s.y).minus(new Position(closestStar.x, closestStar.y)).plus(Static.starCenterPos.times(1.0/Static.lightYearsToMillionKM)).times(Static.lightYearsToMillionKM);
-								
-				double distance=currentPos.distance(p);								//vi r�knar ut avst�ndet till stj�rnan						
-				double acc=(Static.GRAVITY_CONSTANT*s.mass)/(distance*distance);				//vi r�knar ut accelerationen till objektet
-				Position delta=p.minus(currentPos);
-				double theta=Math.atan2(delta.y, delta.x);
-				Position direction = new Position(acc*Math.cos(theta), acc*Math.sin(theta));
-				Position gravityVector = direction.times(Static.TIMEFACTOR*speed);
-				currentTraj.add(gravityVector);
-			}
+		if(true){		
+			
+			Position[] data = Static.getGravityHour(this, approxIndex, currentTraj, currentPos, closeStars);
+			positionApproximation.add(data[0]);
+			trajectoryApproximation.add(data[1]);
+		}
+		else if(true){		
+			
+			Position[] data = Static.getGravityMinutes(this, approxIndex, currentTraj, currentPos, closeStars);
+			positionApproximation.add(data[0]);
+			trajectoryApproximation.add(data[1]);
 		}
 
-		Position boost = getBoosterAdding(approxIndex, currentPos.minus(Static.starCenterPos).plus(new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM)), currentTraj);
-		
-		if(boost.x == -666 && boost.y == -666){
-			currentTraj = new Position(0,0);
-		}
-		else{
-			currentTraj.add(boost);
-		}
-		
-		
-		positionApproximation.add(currentPos.plus(currentTraj.times(speed)));
-		trajectoryApproximation.add(currentTraj);
+
 	}
 	
-
-
-	
-	private Position getBoosterAdding(int approxIndex, Position currPos, Position currentTraj) {
+	/**
+	 * Retrieves the current booster force for a specific hour.
+	 * @param approxIndex (int) - the current hour
+	 * @param currPos	(Position) - the current space position
+	 * @param currentTraj (Position) - the current trajectory
+	 * @return a Position corresponding to the trajectory adding from the booster for the specific hour
+	 */
+	public Position getBoosterAdding(int approxIndex, Position currPos, Position currentTraj) {
 		Position boostAdd = new Position(0,0);
 		
-		approxIndex = (approxIndex+insertDay*24);
+		approxIndex = (approxIndex+launchDay*24);
 			boostAdd = booster.getBoost(approxIndex, currPos, currentTraj);
 		return boostAdd;
 	}
 
-	
-	public double distanceToStar(Position currPos, Star s){
-		Position starPos = new Position(s.x, s.y).times(Static.lightYearsToMillionKM);
-		
-		Position p = currPos.minus(Static.starCenterPos);		
-		p.add(new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM));
-		
-		double distance = p.minus(starPos).length();
-		return distance;
-	}
-	
-	
-	
-	public void switchStar(Star s){
-		Position currentOffset = currentPosition.minus(Static.starCenterPos);
-		Position oldStarPos = new Position(closestStar.x, closestStar.y).times(Static.lightYearsToMillionKM);
-		Position newStarPos = new Position(s.x, s.y).times(Static.lightYearsToMillionKM);
-						
-		Position newOffset = currentOffset.plus(oldStarPos).minus(newStarPos).plus(Static.starCenterPos);
-		
-		//System.out.println("offset distance " + newOffset.length() + " distance to star-" + s.star_id);
-		
-		currentPosition = newOffset;
-		closestStar = s;
-		spacecraft.star_id = s.star_id;
-	}
-	
-	
-	public Position getGalacticPosition(Position p){
-		Position starPos = new Position(closestStar.x, closestStar.y);
-		Position starOffset = p.times(1.0/Static.lightYearsToMillionKM);		
-		return starPos.plus(starOffset);		
-	}
-
-	
+	/**
+	 * Retrieves the space sector in which the provided position is positioned in
+	 * @param p (Position) the current position.
+	 * @return all the stars in the current sector
+	 */
 	public ArrayList<Star> getStarSector(Position p){
 		Galaxy g = closestStar.galax;
-		ArrayList<Star> currentSector = g.getSector(getGalacticPosition(p));
+		ArrayList<Star> currentSector = g.getSector(p.times(1.0/Static.lightYearsToMillionKM));
 		return currentSector;
 	}
-	
-	
-	
-	
-	
-	
+			
 	/**
 	 * Calculate a trajectory arc based on the gravitational pull from stars and planets, along with the
 	 * forces of the objects own propulsion
 	 */
 	public void calculateTrajectoryArc(){
-		//System.out.println("CALCULATING TRAJECTORY: DRAW BY SUN: " + closestStar.mass);
-		
 		positionApproximation.clear();
 		trajectoryApproximation.clear();
 				
-		//ArrayList<Planet> planets = Static.getStarPlanets(closestStar);
-		
-		positionApproximation.add(currentPosition.plus(Static.starCenterPos).clone());
+		positionApproximation.add(currentGalaxyPosition.clone());
 		trajectoryApproximation.add(currentTrajectory.clone());
-		//System.out.println("PRE-LOOP::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 		ArrayList<Star> vicinityStars = new ArrayList<Star>();
-//		objPosis.add(Static.starCenterPos);
-//		
-//		for(Star s : closestStar.neighbors){
-//			Position starOffset = new Position(s.x, s.y).minus(new Position(closestStar.x, closestStar.y)).plus(Static.starCenterPos.times(1.0/Static.lightYearsToMillionKM)).times(Static.lightYearsToMillionKM);
-//			objPosis.add(starOffset);
-//		}
 		for(int i = 0; i < navComputer.memory; i++){
 			
 			if(i%100 == 0){
 				vicinityStars = getStarSector(positionApproximation.get(i));			
 			}
-			boolean print = false;
-			if(i == navComputer.memory-1){print = true;}
-			gravity(1, vicinityStars, closestStar.mass, i, print);
-			//ArrayList<Star> closest = closestStar.galax.getSector(closestStar);
-			//closest.remove(closestStar);			
-
-			
-			
-			
-
+			gravity(vicinityStars, i);
 		}
 		
 	}
 	
+	
+	
+	
+	public Position getLocalPos(Star s, Position p){
+		Position starPos = new Position(s.x, s.y).times(Static.lightYearsToMillionKM);
+		return p.minus(starPos);
+	}
+	
+	
+	public Position getStarPanelPaintPos(Position p, SPanel sp, double zoom){
+		return getLocalPos(sp.currentStar, p).times(zoom).plus(Static.starCenterPos);
+	}
+	
 	public void Paint(Graphics g, double zoom, double zoom_x, double zoom_y, GPanel gp, SPanel sp){		
-		double starScale = 1.0;
+		double starScale = Static.lightYearsToMillionKM;
 		g.setColor(Color.red);
 		Position starPos = Static.starCenterPos;	
 		
 		if(gp != null){
-			starScale = (1.0/(Static.lightYearsToMillionKM));
-			starPos = new Position(((closestStar.x+zoom_x)*zoom), ((closestStar.y+zoom_y)*zoom));						
-			Position p = starSpacePosition.minus(Static.starCenterPos).times(zoom*starScale);
-			g.fillOval((int)(((closestStar.x+zoom_x)*zoom)+p.x-5), (int)(((closestStar.y+zoom_y)*zoom)+p.y-5), (int)(2*5), (int)(2*5));
+
+			//calculates the on-screen relative position.
+			//int posX = (int)(x*currentZoom);
+			//int posY = (int)(y*currentZoom);
+
+			int x = (int)(((starSpacePosition.x/Static.lightYearsToMillionKM)+zoom_x)*zoom);
+			int y = (int)(((starSpacePosition.y/Static.lightYearsToMillionKM)+zoom_y)*zoom);
+
+
+			
+			//int x = (int)(((starSpacePosition.x/Static.lightYearsToMillionKM)+zoom_x)*zoom);
+			//int y = (int)(((starSpacePosition.y/Static.lightYearsToMillionKM)+zoom_y)*zoom);
+			g.fillOval(x-5 , y-5, 10 , 10);
+			
+			
+			
+//			starScale = (1.0/(Static.lightYearsToMillionKM));
+//			starPos = new Position(((closestStar.x+zoom_x)*zoom), ((closestStar.y+zoom_y)*zoom));						
+//			Position p = getLocalPos(sp.currentStar).times(zoom*starScale);
+//			g.fillOval((int)(((closestStar.x+zoom_x)*zoom)+p.x-5), (int)(((closestStar.y+zoom_y)*zoom)+p.y-5), (int)(2*5), (int)(2*5));
 			
 		}
 		else if(sp != null){					
-			Position paintPos = starSpacePosition.minus(Static.starCenterPos).times(zoom).plus(Static.starCenterPos);			
-			g.fillOval((int)( paintPos.x-5), (int)( paintPos.y-5), (int)(2*5), (int)(2*5));								
+			starScale = 1.0;
+			//Position paintPos = starSpacePosition.minus(Static.starCenterPos).times(zoom).plus(Static.starCenterPos);	
+			Position paintPos = getLocalPos(sp.currentStar, starSpacePosition).times(zoom).plus(Static.starCenterPos);	
+			g.fillOval((int)( paintPos.x-5), (int)( paintPos.y-5), (int)(2*5), (int)(2*5));			
+			//g.drawString(paintPos.toString(), (int)(400), (int)(200));
 		}
 
 		
@@ -232,7 +201,16 @@ public class SpaceObject {
 			int counter = 0;
 			double dotValue = 1000.0/positionApproximation.size();
 			double dotIter = 0;
-			Position lastPos = positionApproximation.get(0).minus(Static.starCenterPos).times(zoom*starScale).plus(starPos);
+			//Position lastPos = positionApproximation.get(0).times(zoom*starScale);
+			Position lastPos = new Position(-9999, -9999);
+			if(sp != null){lastPos = getLocalPos(sp.currentStar, positionApproximation.get(0)).times(zoom).plus(Static.starCenterPos);}
+			else if(gp != null){
+				lastPos = 
+						new Position(
+								(((positionApproximation.get(0).x/Static.lightYearsToMillionKM)+zoom_x)*zoom),
+								(((positionApproximation.get(0).y/Static.lightYearsToMillionKM)+zoom_y)*zoom)
+								);
+			}
 			for(Position dotp : positionApproximation){
 				counter++;
 				dotIter += dotValue;
@@ -244,7 +222,15 @@ public class SpaceObject {
 							}					
 					}
 					dotIter -= 1;
-					Position p2 = dotp.minus(Static.starCenterPos).times(zoom*starScale).plus(starPos);
+					Position p2 = dotp.times(zoom*starScale);
+					if(sp != null){p2 = getLocalPos(sp.currentStar, dotp).times(zoom).plus(Static.starCenterPos);}
+					else if(gp != null){
+						p2 = 
+								new Position(
+										(((dotp.x/Static.lightYearsToMillionKM)+zoom_x)*zoom),
+										(((dotp.y/Static.lightYearsToMillionKM)+zoom_y)*zoom)
+										);
+					}
 					g.drawLine((int)p2.x, (int)p2.y, (int)lastPos.x, (int)lastPos.y);
 					lastPos = p2;
 				}
@@ -263,13 +249,19 @@ public class SpaceObject {
 	
 	
 	
-	
+	/**
+	 * Set the current spaceCraft position to the one it will have at specified time from the start of time.
+	 * @param hours (double) the time of which to set the spaceCraft at.
+	 */
 	public void setDatePos(double hours){
-		hours -= insertDay*24;
+		hours -= launchDay*24;
 		if(positionApproximation.size() > 10){
 			if(hours >= 0 && hours < positionApproximation.size()){
 				starSpacePosition = positionApproximation.get((int)hours).clone();
 				trajectory = trajectoryApproximation.get((int)hours).clone();
+			}
+			else{
+				starSpacePosition = new Position(-999, -999);
 			}
 		}
 	}

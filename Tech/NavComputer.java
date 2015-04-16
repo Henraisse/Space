@@ -50,8 +50,9 @@ public class NavComputer {
 		
 	}
 	
-	public void resetNavInstructions(){
-		for(int i = 0; i < boosterInstructions.length; i++){
+	public void resetNavInstructions(int a){
+		boolean nothingAfter = true;
+		for(int i = a; i < boosterInstructions.length; i++){
 			boosterInstructions[i] = null;
 		}
 		

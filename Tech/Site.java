@@ -1,12 +1,15 @@
 package Tech;
 
+import java.util.ArrayList;
+
 import Space.Galaxy;
 
 public class Site {
 	
 	public Galaxy galaxy;
-	int star_id;
-	int planet_id;
+	public int star_id;
+	public int planet_id;
+	public ArrayList<SpaceCraft> presentCrafts = new ArrayList<SpaceCraft>();
 	
 	public Site(Galaxy g, int sid, int pid){
 		galaxy = g;

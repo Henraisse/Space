@@ -12,6 +12,7 @@ import Space.Galaxy;
 import Space.Planet;
 import Space.SpaceObject;
 import Space.Star;
+import Space.StarPlanetFamily;
 import Static.Game;
 import Static.Physics;
 import Static.Position;
@@ -40,6 +41,8 @@ public class SPanel extends JPanel{
 	SpaceCraft currentSpaceCraft;
 	
 	public double zoom_scale = 1.0;
+	public double zoom_x = 0;
+	public double zoom_y = 0;
 	public boolean active = false;
 	
 	
@@ -70,17 +73,9 @@ public class SPanel extends JPanel{
 		MenuButton a7 = new MenuButton(8, menu, 85+(60*3), 940+60*1,  "", Static.ruler_font12, "resettime");
 		MenuButton a8 = new MenuButton(9, menu, 85+(60*4), 940+60*1,  "", Static.ruler_font12, "reference");
 		MenuButton a9 = new MenuButton(10, menu, 85+(60*5), 940+60*1,  "", Static.ruler_font12, "resetorbit");
-//		menu.buttons.add(a0);		
-//		menu.buttons.add(a1);		
-//		menu.buttons.add(a2);
-//		menu.buttons.add(a3);
-//		menu.buttons.add(a4);
-//		menu.buttons.add(a5);
-//		menu.buttons.add(a6);
-//		menu.buttons.add(a7);
+
 		
 		MenuButton b0 = new MenuButton(3, menu, 170, 610,  "", Static.ruler_font12, "squareButton");
-//		menu.buttons.add(b0);
 	}
 
 	public void paintComponent(Graphics g)
@@ -96,14 +91,20 @@ public class SPanel extends JPanel{
 			p.Paint(g, zoom_scale, display_orbits, display_descriptions);
 		}
 		
-		currentStar.drawStarCenter(g, zoom_scale, display_descriptions);
+		try{currentStar.drawStarCenter(g, zoom_scale, display_descriptions);}
+		catch(NullPointerException e){
+			System.err.println("CurrentStar is Null!");
+			System.exit(0);
+			
+		}
+		
 		
 		
 		//voyager.Paint(g, zoom_scale);
 		for(SpaceCraft sc : game.spacecrafts){
-			if(currentStar.star_id == sc.star_id){
-				sc.object.Paint(g, zoom_scale, 0, 0, null, this);
-			}
+			//if(currentStar.star_id == sc.star_id){
+			sc.object.Paint(g, zoom_scale, 0, 0, null, this);
+			//}
 			
 		}
 		//currentSpaceCraft.object.Paint(g, zoom_scale);
@@ -119,6 +120,7 @@ public class SPanel extends JPanel{
 	
 	public void setStar(Star s){		
 		if(s != null){
+			//StarPlanetFamily p = new StarPlanetFamily(s);
 			//Static.calculateNeighbors(s);
 
 			currentStar = s;
@@ -137,7 +139,7 @@ public class SPanel extends JPanel{
 			SpaceCraft sc = game.spacecrafts.get(i);
 			//if(sc.star_id == currentStar.star_id){
 			
-			sc.object.switchStar(s);
+			//sc.object.switchStar(s);
 			presentSpacecrafts.add(sc);			
 				//sc.object.closestStar = s;
 			sc.object.calculateTrajectoryArc();
@@ -187,4 +189,36 @@ public class SPanel extends JPanel{
 			
 		}
 	}
+	
+	
+	
+	public int getLocalX(double x){
+		return (int) ((zoom_x+x)*zoom_scale);
+	}
+	
+	public int getLocalY(double y){
+		return (int) ((zoom_y+y)*zoom_scale);
+	}
+	
+
+	/**
+	 * Returns the "Space"-coordinate x
+	 * @param x
+	 * @return
+	 */
+	public double getGlobalX(int x){
+		//inparameter x är den positionen man klickade på
+		return (x/zoom_scale)-zoom_x;
+	}
+	
+	/**
+	 * Returns the "Space"-coordinate y
+	 * @param y
+	 * @return
+	 */
+	public double getGlobalY(int y){
+		return (y/zoom_scale)-zoom_y;
+	}
+	
+	
 }

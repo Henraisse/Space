@@ -19,6 +19,7 @@ import Space.Galaxy;
 import Space.Planet;
 import Space.Star;
 import Static.Game;
+import Static.Position;
 import Static.Static;
 
 /**
@@ -56,7 +57,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	GraphicsDevice[] devices;
 	
 	boolean terminating = false;
-	public boolean spacecraftSunRef = true;
+	public boolean spacecraftSunRef = false;
 	double warp = 1.0;
 	public static int ZOOM_SPEED = 30;
 	
@@ -269,22 +270,59 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 	/**
 	 * If mouse is clicked.
 	 */
-	public void mouseClicked(MouseEvent arg0) {			
-		if(!gpanel.menu.withinBounds(arg0.getX(),arg0.getY())){
-		// centrera bilden där man klickat
-		double x = gpanel.getGlobalX(arg0.getX());
-		double y = gpanel.getGlobalY(arg0.getY());	
+	public void mouseClicked(MouseEvent arg0) {					
+		if(gpanel.active){
+			if(!gpanel.menu.withinBounds(arg0.getX(),arg0.getY())){
+				// centrera bilden där man klickat
+				double x = gpanel.getGlobalX(arg0.getX());
+				double y = gpanel.getGlobalY(arg0.getY());	
 
-		int id = gax.getStarId(x, y);
-		Star s = gax.stars.get(id);
-		
-		gpanel.menu.currentStarName = Static.getStarName(s);
-		
-		Static.flagSector(gax, x, y);
-		
-		
+				int id = gax.getStarId(x, y);
+				Star s = gax.stars.get(id);
+				
+				gpanel.menu.currentStarName = Static.getStarName(s);
+				
+				Static.flagSector(gax, x, y);
+				
+				
+				}
 		}
-
+		else if(spanel.active){
+			double x = spanel.getGlobalX(arg0.getX());
+			double y = spanel.getGlobalY(arg0.getY());
+			
+			System.out.println("clicked at " + x + ", " + y);
+			
+			Planet closestPlanet = null;
+			double distance = 0;
+			int counter = 0;
+			for(Planet p : spanel.planets){
+				p.selected = false;
+			}
+			
+			for(Planet p : spanel.planets){
+				
+				double newDistance = p.planetPos.distance(new Position(x,y));				
+				System.out.println("distance: " + newDistance);
+				
+				if(closestPlanet == null || newDistance < distance){
+					if(closestPlanet != null){
+						closestPlanet.selected = false;
+						
+					}
+					distance = newDistance;
+					closestPlanet = p;
+					closestPlanet.selected = true;
+				}
+				counter++;
+			}
+		}
+		
+		
+		
+		
+		
+		
 	}
 
 	/**
@@ -519,7 +557,7 @@ public class Frame extends JFrame implements MouseWheelListener, MouseListener, 
 		setButtonState('c', true);
 		double days0 = spanel.days;
 		if(spanel.currentSpaceCraft.object.navComputer != null){
-		spanel.currentSpaceCraft.object.navComputer.resetNavInstructions();
+		spanel.currentSpaceCraft.object.navComputer.resetNavInstructions((int)(spanel.days*24));
 		spanel.currentSpaceCraft.object.calculateTrajectoryArc();
 		spanel.days = days0;
 		}

@@ -17,7 +17,8 @@ public class SpaceCraft {
 	public SpaceObject object;
 	public Booster booster;
 	public NavComputer navComputer;
-
+	public Site launchSite;
+	
 	public Game game;
 	
 	
@@ -58,7 +59,7 @@ public class SpaceCraft {
 						if(planet.planetId == planet_id){
 							//System.out.println("planet id: " + planet.planetId);
 							//System.out.println(planet.planetPos + "    " + planet.trajectory);
-							ret[0] = planet.planetPos.minus(Static.starCenterPos);
+							ret[0] = planet.planetPos.minus(Static.starCenterPos).plus(new Position(currentStar.x, currentStar.y).times(Static.lightYearsToMillionKM));
 							ret[1] = planet.trajectory;
 							return ret;
 						}
@@ -72,19 +73,34 @@ public class SpaceCraft {
 	}
 
 
-	public void launch(Position initialRocketThrust){
+	public void launch(Position initialRocketThrust, int day){
+		Position[] starOffsetPosition = determinePosition(launchSite);
+		launchSite.presentCrafts.remove(this);
 		inOrbit = true;
+		object.launchDay = day;
+		object.currentGalaxyPosition = starOffsetPosition[0];
+		object.currentTrajectory = starOffsetPosition[1];
 	}
 	
-	public void land(){
-		inOrbit = false;
+	public void land(Site site){
+		if(isLandingPossible(site)){
+			launchSite = site;
+			site.presentCrafts.add(this);
+			inOrbit = false;
+		}
+
 	}
 	
 	public void calculateClosestStar(){
 		
 	}
 	
-	
+	public boolean isLandingPossible(Site site){
+		
+		//avgör fart
+		
+		return false;
+	}
 	
 }
 

@@ -18,6 +18,7 @@ public class Game {
 	public Frame frame;
 	
 	
+	public int passedDays = 0;
 	
 	public Game(){}
 	

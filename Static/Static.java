@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 
 import Space.Galaxy;
 import Space.Planet;
+import Space.SpaceObject;
 import Space.Star;
 
 
@@ -48,6 +49,8 @@ public class Static {
 	public static final double STAR_DISPLAY_SIZE_MULTIPLIER = 7.0;
 	public static final String DISPLAY_DESCRIPTION_TEXT = "Display Descriptions";
 	public static final String MANUAL_ORBIT_SWITCH_TEXT = "Manual Orbits";
+	public static final double STAR_PULL_BOUNDARY_MKM = 10000;
+	public static final double PLANET_GRAVITY_MAX_DISTANCE = 200;
 
 	public static String DISTANCE_RULER_FONT = "BoomBox 2";
 	
@@ -504,6 +507,70 @@ public class Static {
 		
 		
 		return stars;
+	}
+	
+	public static Position getGravityPullVector(Position pulledPos, Position pullerPos, double mass, double hours){
+		double distance=pulledPos.distance(pullerPos);
+		double acc=(Static.GRAVITY_CONSTANT*mass)/(distance*distance);				//vi r�knar ut accelerationen till objektet
+		Position delta=pullerPos.minus(pulledPos);
+		double theta=Math.atan2(delta.y, delta.x);
+		Position direction = new Position(acc*Math.cos(theta), acc*Math.sin(theta));
+		Position gravityVector = direction.times(Static.TIMEFACTOR*hours);
+		return gravityVector;
+	}
+	
+	public static Position[] getGravityHour(SpaceObject so, int index, Position trajectory, Position pulledPos, ArrayList<Star> closeStars){
+		Position currentPosition = pulledPos;
+		Position currentTrajectory = trajectory;
+			for(Star s : closeStars){
+				Position starPos = new Position(s.x*Static.lightYearsToMillionKM, s.y*Static.lightYearsToMillionKM);
+				double distance=currentPosition.distance(starPos);
+				
+				if(Static.distanceToStar(currentPosition, s) < Static.STAR_PULL_BOUNDARY_MKM){										
+					Position gravityVector = Static.getGravityPullVector(currentPosition, starPos, s.mass, 1.0);
+					currentTrajectory.add(gravityVector);	
+					currentTrajectory.add(so.getBoosterAdding(index, currentPosition, currentTrajectory));
+				}
+				
+			}
+			currentPosition.add(currentTrajectory);	
+		Position[] ret = {currentPosition, currentTrajectory};				
+		return ret;
+	}
+	
+	public static Position[] getGravityMinutes(SpaceObject so, int index, Position trajectory, Position pulledPos, ArrayList<Star> closeStars){
+		Position currentPosition = pulledPos;
+		Position currentTrajectory = trajectory;
+		for(int t = 0; t < 60; t++){
+			for(Star s : closeStars){
+				Position starPos = new Position(s.x*Static.lightYearsToMillionKM, s.y*Static.lightYearsToMillionKM);
+				double distance=currentPosition.distance(starPos);
+				
+				if(Static.distanceToStar(currentPosition, s) < Static.STAR_PULL_BOUNDARY_MKM){										
+					Position gravityVector = Static.getGravityPullVector(currentPosition, starPos, s.mass, 0.0166667);
+					currentTrajectory.add(gravityVector);		
+					currentTrajectory.add(so.getBoosterAdding(index, currentPosition, currentTrajectory).times(0.0166667));
+				}
+			}
+			currentPosition.add(currentTrajectory.times(0.0166667));
+		}
+		Position[] ret = {currentPosition, currentTrajectory};				
+		return ret;
+	}
+	
+	/**
+	 * Calculates the distance between a point in space to 
+	 * @param currPos (Position) - the current Position in space (distance unit Million Kilometers)
+	 * @param s (Star) - the current Star
+	 * @return (double) the distance in Million Kilometers.
+	 */
+	public static double distanceToStar(Position currPos, Star s){
+		if(s != null){
+			Position starPos = new Position(s.x*Static.lightYearsToMillionKM, s.y*Static.lightYearsToMillionKM);			
+			return currPos.minus(starPos).length();
+		}
+		System.err.println("Cannot calculate distance to star: Star s is null!");
+		return 0;
 	}
 	
 	

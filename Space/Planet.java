@@ -46,6 +46,8 @@ public class Planet {
 	public boolean life;
 	public Double kg;	
 	
+	public boolean selected;
+	
 	public Color color = Color.BLACK;
 	//public SPanel spanel;
 	public Position planetPos; 	
@@ -327,6 +329,9 @@ public class Planet {
 			g.setFont(new Font(Static.DISTANCE_RULER_FONT, Font.PLAIN, fontSize));
 			Position p = new Position((planetPos.x-Static.starCenterPos.x)*zoom, (planetPos.y-Static.starCenterPos.y)*zoom);
 			setDevColor(g);
+			if(selected){
+				g.setColor(Color.blue);
+			}
 			g.drawString("Distance: " + distance + " M km", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(0*fontSize));
 			g.drawString("Temp: " + (double)((int)((surfaceTemp-273)*10)/10.0) + " C ", (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(1*fontSize));				
 			g.drawString("Life: " + Static.yesNo(life), (int)(Static.starCenterPos.x+p.x+rad)+10, (int)(Static.starCenterPos.y+p.y+rad)+(2*fontSize));
